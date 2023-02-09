@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private BallController ballController;
     [SerializeField] private P1Controller p1Controller;
     [SerializeField] private EnemyController enemyController;
-    
+    [SerializeField] private BeatManager beatManager;
     public enum GameStates
     {
         GameStart,
@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         gs = GameStates.GameStart;
+        beatManager.Initialize();
+
     }
 
     // Update is called once per frame
