@@ -29,17 +29,24 @@ public class GameManager : MonoBehaviour
         switch (gs)
         {
             case GameStates.GameStart:
-                ballController.MoveBallTo(BallController.BallLocation.Enemy);
+                ballController.MoveBallTo(BallController.BallLocation.Enemy1);
                 gs = GameStates.GameInProgress;
                 break;
             case GameStates.GameInProgress:
-                if (ballController.bl == BallController.BallLocation.Enemy)
+                switch (ballController.bl)
                 {
-                    enemyController.HitBallTo(ballController.MoveBallTo);
-                }
-                else if (ballController.bl == BallController.BallLocation.Player)
-                {
-                    p1Controller.HitBallTo(ballController.MoveBallTo);
+                    case BallController.BallLocation.Enemy1:
+                        enemyController.HitBallTo(ballController.MoveBallTo);
+                        break;
+                    case BallController.BallLocation.Enemy2:
+                        enemyController.HitBallTo(ballController.MoveBallTo);
+                        break;
+                    case BallController.BallLocation.Enemy3:
+                        enemyController.HitBallTo(ballController.MoveBallTo);
+                        break;
+                    case BallController.BallLocation.Player:
+                        p1Controller.HitBallTo(ballController.MoveBallTo);
+                        break;
                 }
                 break;
         }
