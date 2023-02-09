@@ -15,6 +15,8 @@ public class BeatManager : MonoBehaviour
     public float lowerBound;
     public float upperBound;
 
+   
+
 
     //OnBeat returns 'true' if it's called in a frame that is within the tolerance window on either side of the beat.
     public bool OnBeat()
@@ -40,6 +42,13 @@ public class BeatManager : MonoBehaviour
         return _part;
     }
 
+    //Get Interval returns which beat we are in. It subtracts tolerance so that the interval doesn't fall in the middle of the window
+    public int GetInterval()
+    {
+        float _t = Time.time - tolerance;
+        int _seconds = (int)_t;
+        return _seconds;
+    }
 
 
     //Call this from the GameManager start function
