@@ -16,21 +16,7 @@ public class BeatManager : MonoBehaviour
     public float upperBound;
 
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        interval = 60 / BPM;
-        lowerBound = 1 - tolerance;
-        upperBound = tolerance;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //OnBeat returns 'true' if it's called in a frame that is within the tolerance window on either side of the beat.
     public bool OnBeat()
     {
         bool b = false;
@@ -53,5 +39,17 @@ public class BeatManager : MonoBehaviour
         
         return _part;
     }
+
+
+
+    //Call this from the GameManager start function
+    public void Initialize()
+    {
+        interval = 60 / BPM;
+        lowerBound = 1 - tolerance;
+        upperBound = tolerance;
+    }
+   
+
 
 }
