@@ -8,7 +8,9 @@ public class BallController : MonoBehaviour
     public enum BallLocation
     {
         Player,
-        Enemy,
+        Enemy1,
+        Enemy2,
+        Enemy3
     }
 
     public BallLocation bl;
@@ -17,19 +19,35 @@ public class BallController : MonoBehaviour
     {
         Vector3 position = gameObject.transform.position;
         Debug.Log(position);
-        
-        if (ballLocation == BallLocation.Player)
+
+        switch (ballLocation)
         {
-            bl = BallLocation.Player;
-            position.y = -2f;
-            gameObject.transform.position = position;
+            case BallLocation.Player:
+                bl = BallLocation.Player;
+                position.x = -3f;
+                position.y = -2.5f;
+                break;
+            
+            case BallLocation.Enemy1:
+                bl = BallLocation.Enemy1;
+                position.x = -3f;
+                position.y = 2.5f;
+                break;
+            
+            case BallLocation.Enemy2:
+                bl = BallLocation.Enemy2;
+                position.x = 3f;
+                position.y = 2.5f;
+                break;
+            
+            case BallLocation.Enemy3:
+                bl = BallLocation.Enemy3;
+                position.x = 3f;
+                position.y = -2.5f;
+                break;
         }
         
-        if (ballLocation == BallLocation.Enemy)
-        {
-            bl = BallLocation.Enemy;
-            position.y = 2f;
-            gameObject.transform.position = position;
-        }
+        gameObject.transform.position = position;
+        
     }
 }

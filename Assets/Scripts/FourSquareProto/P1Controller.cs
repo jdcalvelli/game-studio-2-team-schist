@@ -9,8 +9,15 @@ public class P1Controller : Competitor
     {
         if (Input.GetKey(KeyCode.W))
         {
-            Debug.Log("Test");
-            callback(BallController.BallLocation.Enemy);
+            callback(BallController.BallLocation.Enemy1);
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            callback(BallController.BallLocation.Enemy2);
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            callback(BallController.BallLocation.Enemy3);
         }
     }
 }
