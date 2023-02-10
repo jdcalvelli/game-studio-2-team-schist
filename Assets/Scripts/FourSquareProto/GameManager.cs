@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Color = System.Drawing.Color;
 
 public class GameManager : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private P1Controller p1Controller;
     [SerializeField] private EnemyController enemyController;
     [SerializeField] private BeatManager beatManager;
+    // this is a great example of terrible practice that will change later
+    [SerializeField] private BeatPingView beatPingView;
+    
     public enum GameStates
     {
         GameStart,
@@ -21,7 +25,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         gs = GameStates.GameStart;
-        beatManager.Initialize();
+        
 
     }
 
@@ -33,6 +37,7 @@ public class GameManager : MonoBehaviour
             case GameStates.GameStart:
                 ballController.MoveBallTo(BallController.BallLocation.Enemy1);
                 gs = GameStates.GameInProgress;
+                beatManager.Initialize();
                 break;
             case GameStates.GameInProgress:
                 switch (ballController.bl)
@@ -50,6 +55,16 @@ public class GameManager : MonoBehaviour
                         p1Controller.HitBallTo(ballController.MoveBallTo);
                         break;
                 }
+
+                if (beatManager.OnBeat())
+                {
+                    beatPingView.ChangeColor(UnityEngine.Color.red);
+                }
+                else
+                {
+                    beatPingView.ChangeColor(UnityEngine.Color.white);
+                }
+
                 break;
         }
     }
