@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         gs = GameStates.GameStart;
-        beatManager.Initialize();
+        
 
     }
 
@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
             case GameStates.GameStart:
                 ballController.MoveBallTo(BallController.BallLocation.Enemy1);
                 gs = GameStates.GameInProgress;
+                beatManager.Initialize();
                 break;
             case GameStates.GameInProgress:
                 switch (ballController.bl)
