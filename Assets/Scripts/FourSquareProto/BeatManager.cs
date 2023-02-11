@@ -23,18 +23,17 @@ public class BeatManager : MonoBehaviour
     //OnBeat returns 'true' if it's called in a frame that is within the tolerance window on either side of the beat.
     public bool OnBeat()
     {
-        Debug.Log("OnBeat called");
+        
         bool b = false;
         int _thisInterval = GetIntervalBeatCount();
         if (lastInterval < _thisInterval)
         {
-            Debug.Log("Interval advancing");
+            
             float _ipart = GetIntervalPart();
             if (_ipart > lowerBound || _ipart < upperBound)
             {
                 b = true;
-                Debug.Log("Movement allowed");
-            }
+                           }
             lastInterval= _thisInterval;
         }
         return b;
@@ -66,7 +65,6 @@ public class BeatManager : MonoBehaviour
     //Call this from the GameManager start function
     public void Initialize()
     {
-        Debug.Log("Beat Manager Initialized");
         interval = 60f / BPM;
         lowerBound = 1 - tolerance;
         upperBound = tolerance;
