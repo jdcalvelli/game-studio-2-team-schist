@@ -20,21 +20,23 @@ public class BeatManager : MonoBehaviour
     // the last interval that was acted on
     public int lastInterval;
 
-    //OnBeat returns 'true' if it's called in a frame that is within the tolerance window on either side of the beat.
+    //OnBeat returns 'true' if the current time is a valid time for a player to take an action.
     public bool OnBeat()
     {
         
+        //first, check to make sure that we've moved into a new interval
         bool b = false;
         int _thisInterval = GetIntervalBeatCount();
         if (lastInterval < _thisInterval)
         {
-            
+            //if we're in a new interval, then check if we're in the window of the interval
             float _ipart = GetIntervalPart();
             if (_ipart > lowerBound || _ipart < upperBound)
             {
                 b = true;
-                           }
-            lastInterval= _thisInterval;
+            }
+            lastInterval = _thisInterval;
+
         }
         return b;
 
@@ -57,7 +59,6 @@ public class BeatManager : MonoBehaviour
         //adds toleranceNum so that back-half of an interval doesn't get treated as the same as the front-half.
         float _t = (Time.time + toleranceNum)/interval;
         int _ipart = (int)_t;
-        Debug.Log(_ipart);
         return _ipart;
     }
 
