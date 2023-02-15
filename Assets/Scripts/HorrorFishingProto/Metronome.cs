@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Metronome : MonoBehaviour
@@ -13,13 +14,16 @@ public class Metronome : MonoBehaviour
     
     [SerializeField] private float metronomeMaxTime = 3f;
     [SerializeField] private float graceMaxTime = 0.3f;
-    [SerializeField] private SpriteRenderer spriteDisplay;
+    [SerializeField] private Image spriteDisplay;
 
     [SerializeField] private TextMeshProUGUI hitDisplay;
     [SerializeField] private TextMeshProUGUI timerDisplay;
 
+    private int combo;
+
 
     private void Start() {
+        combo = 0;
         metronomeTimer = metronomeMaxTime;
         graceTimer = graceMaxTime;
 
@@ -30,7 +34,8 @@ public class Metronome : MonoBehaviour
     }
 
     private void Update() {
-        timerDisplay.SetText((Mathf.Round(metronomeTimer * 10f) / 10f).ToString());
+        //timerDisplay.SetText((Mathf.Round(metronomeTimer * 10f) / 10f).ToString());
+        timerDisplay.SetText("(x" + combo.ToString() + ")");
 
         if (metronomePassed) {
             if (hitDisplayTimer > 0f) {
@@ -54,11 +59,13 @@ public class Metronome : MonoBehaviour
             hitDisplay.SetText("(!!!)");
             if (Input.GetKeyDown("space")) {
                 hitDisplay.SetText("nice");
+                combo++;
                 ResetTimers();
             }
         }
         else if (metronomeTimer <= 0f && graceTimer <= 0f) {
             hitDisplay.SetText("miss");
+            combo = 0;
             ResetTimers();
         }
     }
