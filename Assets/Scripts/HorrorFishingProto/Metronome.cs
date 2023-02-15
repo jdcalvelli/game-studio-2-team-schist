@@ -8,16 +8,15 @@ public class Metronome : MonoBehaviour
 {
     private float metronomeTimer;
     private float graceTimer;
+    private float metronomeMaxTime = 2f;
+    private float graceMaxTime = 0.25f;
+
+    [SerializeField] private Image spriteDisplay;
+    [SerializeField] private TextMeshProUGUI hitDisplay;
+    [SerializeField] private TextMeshProUGUI timerDisplay;
 
     private float hitDisplayTimer;
     private bool metronomePassed;
-    
-    [SerializeField] private float metronomeMaxTime = 3f;
-    [SerializeField] private float graceMaxTime = 0.3f;
-    [SerializeField] private Image spriteDisplay;
-
-    [SerializeField] private TextMeshProUGUI hitDisplay;
-    [SerializeField] private TextMeshProUGUI timerDisplay;
 
     private int combo;
 
@@ -35,7 +34,25 @@ public class Metronome : MonoBehaviour
 
     private void Update() {
         //timerDisplay.SetText((Mathf.Round(metronomeTimer * 10f) / 10f).ToString());
-        timerDisplay.SetText("(x" + combo.ToString() + ")");
+        if (HF_GameManager.hiddenScore <= 110) {
+            timerDisplay.SetText("(x" + combo.ToString() + ")");
+        }
+        else {
+            timerDisplay.SetText("ughh");
+        }
+
+        if (HF_GameManager.hiddenScore >= 45 && HF_GameManager.hiddenScore <= 74) {
+            metronomeMaxTime = 1.5f;
+            graceMaxTime = 0.15f;
+        }
+        else if (HF_GameManager.hiddenScore >= 75 && HF_GameManager.hiddenScore <= 100) {
+            metronomeMaxTime = 1.1f;
+            graceMaxTime = 0.1f;
+        }
+        else if (HF_GameManager.hiddenScore >= 101) {
+            metronomeMaxTime = 0.75f;
+            graceMaxTime = 0.05f;
+        }
 
         if (metronomePassed) {
             if (hitDisplayTimer > 0f) {
@@ -51,6 +68,11 @@ public class Metronome : MonoBehaviour
         if (metronomeTimer > 0f) {
             metronomeTimer -= Time.deltaTime;
             spriteDisplay.color = Color.Lerp(Color.green, Color.white, metronomeTimer);
+            if (Input.GetKeyDown("space")) {
+                hitDisplay.SetText("miss");
+                combo =0;
+                ResetTimers();
+            }
         }
         else if (metronomeTimer <= 0f && graceTimer > 0f) {
             metronomeTimer = 0f;
@@ -59,6 +81,7 @@ public class Metronome : MonoBehaviour
             hitDisplay.SetText("(!!!)");
             if (Input.GetKeyDown("space")) {
                 hitDisplay.SetText("nice");
+                HF_GameManager.hiddenScore++;
                 combo++;
                 ResetTimers();
             }
