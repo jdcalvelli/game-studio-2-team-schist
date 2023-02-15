@@ -18,43 +18,40 @@ public class Metronome : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hitDisplay;
     [SerializeField] private TextMeshProUGUI timerDisplay;
 
-    private Color lerpColor;
-
 
     private void Start() {
         metronomeTimer = metronomeMaxTime;
         graceTimer = graceMaxTime;
 
-        lerpColor = Color.red;
-        spriteDisplay.color = lerpColor;
+        spriteDisplay.color = Color.white;
 
         metronomePassed = false;
         hitDisplayTimer = 0.5f;
-        hitDisplay.gameObject.SetActive(true);
     }
 
     private void Update() {
-        timerDisplay.SetText(metronomeTimer.ToString());
+        timerDisplay.SetText((Mathf.Round(metronomeTimer * 10f) / 10f).ToString());
 
         if (metronomePassed) {
             if (hitDisplayTimer > 0f) {
                 hitDisplayTimer -= Time.deltaTime;
-                hitDisplay.gameObject.SetActive(true);
             }
             else {
                 hitDisplayTimer = 0.5f;
-                hitDisplay.gameObject.SetActive(false);
+                hitDisplay.SetText("");
                 metronomePassed = false;
             }
         }
         
         if (metronomeTimer > 0f) {
             metronomeTimer -= Time.deltaTime;
+            spriteDisplay.color = Color.Lerp(Color.green, Color.white, metronomeTimer);
         }
         else if (metronomeTimer <= 0f && graceTimer > 0f) {
             metronomeTimer = 0f;
-            spriteDisplay.color = Color.blue;
+            spriteDisplay.color = Color.green;
             graceTimer -= Time.deltaTime;
+            hitDisplay.SetText("(!!!)");
             if (Input.GetKeyDown("space")) {
                 hitDisplay.SetText("nice");
                 ResetTimers();
@@ -70,6 +67,6 @@ public class Metronome : MonoBehaviour
         metronomePassed = true;
         metronomeTimer = metronomeMaxTime;
         graceTimer = graceMaxTime;
-        spriteDisplay.color = Color.red;
+        spriteDisplay.color = Color.white;
     }
 }
