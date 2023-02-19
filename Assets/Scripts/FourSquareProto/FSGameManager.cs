@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Color = System.Drawing.Color;
 
-public class GameManager : MonoBehaviour
+public class FSGameManager : MonoBehaviour
 {
     [SerializeField] private BallController ballController;
     [SerializeField] private P1Controller p1Controller;
