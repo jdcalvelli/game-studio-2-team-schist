@@ -26,7 +26,14 @@ public class FishingManager : MonoBehaviour
     
     // for adding onBeatCallback listener during correct state
     private bool onBeatCallbackAdded = false;
-
+    // for checking if a player input is inside of beat time
+    private double beatTime;
+    // this will ultimately be relevant for tweening things
+    private double nextBeatTime;
+    // setting the tolerance window for acceptable hits
+    private double toleranceWindow = 0.5d;
+    
+    
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
@@ -53,6 +60,8 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.biteRegistered:
                 // you have a certain amount of time to hook the fish
+                // fix the call to input within this function to be outside of it on same level as other input calls
+                // for easier refactoring later
                 BiteRegistered();
                 break;
             
@@ -61,6 +70,18 @@ public class FishingManager : MonoBehaviour
                 // as such this should be where the listener gets added for the on beat event
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
+                // checking input - should be refactored elsewhere
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    if (CheckInputOnBeat())
+                    {
+                        Debug.Log("hit on beat");
+                    }
+                    else
+                    {
+                        Debug.Log("missed the beat");
+                    }
+                }
                 break;
             
             case fishingSubGameStates.fishCaught:
@@ -172,14 +193,38 @@ public class FishingManager : MonoBehaviour
     #region RhythmRelated
     
     // event is only added when we're in the correct state, at which point we should execute
-    // the following logic
+    // the following logic on each beat
+    // we can't make calls to input here bc its on a separate thread it seems
     private void OnBeatCallback(Beat.Args beatArgs)
     {
-        Debug.Log("-------");
-        Debug.Log(beatArgs.BeatVal);
-        Debug.Log(beatArgs.BeatTime);
-        Debug.Log(beatArgs.NextBeatTime);
-        Debug.Log("-------");
+        // set some timings to be referenced
+        // assumption is for now that we only care abt quarter notes - will have to refactor later prob
+        beatTime = beatArgs.BeatTime;
+        nextBeatTime = beatArgs.NextBeatTime;
+
+        // logs just for testing
+        // Debug.Log("-------");
+        // Debug.Log(beatArgs.BeatVal);
+        // Debug.Log(beatArgs.BeatTime);
+        // Debug.Log(beatArgs.NextBeatTime);
+        // Debug.Log("-------");
+    }
+
+    // because we cant check for input on alternate threads, what we're going to do is
+    // essentially check if the player presses space within the time frame presented
+    private bool CheckInputOnBeat()
+    {
+        // want to check if the dsptime at this point is within a tolerance window of the
+        // correct beat time as set by the clock script
+        if (AudioSettings.dspTime > beatTime - toleranceWindow 
+            && AudioSettings.dspTime < beatTime + toleranceWindow)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     #endregion
