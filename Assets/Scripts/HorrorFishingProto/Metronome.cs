@@ -41,17 +41,14 @@ public class Metronome : MonoBehaviour
             timerDisplay.SetText("ughh");
         }
 
-        if (HF_GameManager.hiddenScore >= 45 && HF_GameManager.hiddenScore <= 74) {
+        if (HF_GameManager.hiddenScore >= 15 && HF_GameManager.hiddenScore <= 24) {
             metronomeMaxTime = 1.5f;
-            graceMaxTime = 0.15f;
         }
-        else if (HF_GameManager.hiddenScore >= 75 && HF_GameManager.hiddenScore <= 100) {
+        else if (HF_GameManager.hiddenScore >= 25 && HF_GameManager.hiddenScore <= 35) {
             metronomeMaxTime = 1.1f;
-            graceMaxTime = 0.1f;
         }
-        else if (HF_GameManager.hiddenScore >= 101) {
+        else if (HF_GameManager.hiddenScore >= 40) {
             metronomeMaxTime = 0.75f;
-            graceMaxTime = 0.05f;
         }
 
         if (metronomePassed) {

@@ -17,32 +17,32 @@ public class ThoughtManager : MonoBehaviour
     private IEnumerator thoughtDisappear;
 
     private void Update() {
-        if (HF_GameManager.hiddenScore == 10) {
+        if (HF_GameManager.hiddenScore == 5) {
             HandleThoughtBubble(A);
         }
-        else if (HF_GameManager.hiddenScore == 20) {
+        else if (HF_GameManager.hiddenScore == 10) {
             HandleThoughtBubble(B);
         }
-        else if (HF_GameManager.hiddenScore == 30) {
+        else if (HF_GameManager.hiddenScore == 15) {
             HandleThoughtBubble(C);
         }
-        else if (HF_GameManager.hiddenScore == 45) {
+        else if (HF_GameManager.hiddenScore == 20) {
             A.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("...or beef.");
             HandleThoughtBubble(A);
         }
-        else if (HF_GameManager.hiddenScore == 60) {
+        else if (HF_GameManager.hiddenScore == 25) {
             B.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("I could go for really any meat right now...");
             HandleThoughtBubble(B);
         }
-        else if (HF_GameManager.hiddenScore == 75) {
+        else if (HF_GameManager.hiddenScore == 30) {
             C.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("...meat.");
             HandleThoughtBubble(C);
         }
-        else if (HF_GameManager.hiddenScore == 100) {
+        else if (HF_GameManager.hiddenScore == 40) {
             thoughtTimer = 25f;
             HandleThoughtBubble(I_A);
         }
-        else if (HF_GameManager.hiddenScore == 110) {
+        else if (HF_GameManager.hiddenScore == 50) {
             HandleThoughtBubble(I_B);
         }
     }
