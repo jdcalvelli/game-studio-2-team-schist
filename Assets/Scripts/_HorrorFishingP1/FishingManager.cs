@@ -24,6 +24,13 @@ public class FishingManager : MonoBehaviour
     private float hookSetTimer = 0f;
     private float timeToSetHook = 1f;
 
+    // using onAwake to do subscriptions to beatEvents
+    private void Awake()
+    {
+        // this grabs the instance of clock script and calls OnQuarterNote on reception of event
+        Beat.Clock.Instance.Beat += OnQuarterNote;
+    }
+
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
@@ -57,7 +64,7 @@ public class FishingManager : MonoBehaviour
                 // this is ultimately where the rhythmic element will come in
                 // because this isnt figured out yet, i'm just sending it straight to you caught the fish if you
                 // set the hook
-                _fishingSubGameState = fishingSubGameStates.fishCaught;
+                //_fishingSubGameState = fishingSubGameStates.fishCaught;
                 break;
             
             case fishingSubGameStates.fishCaught:
@@ -75,6 +82,8 @@ public class FishingManager : MonoBehaviour
     
     // when fishing, there should be a chance for a bite, then player needs to hook, then they need to reel
 
+    #region RodCastRelated
+
     private void CastRod()
     {
         // this should also ultimately trigger anims on the fishingRodView - remember model view controller :D
@@ -84,6 +93,10 @@ public class FishingManager : MonoBehaviour
         _fishingSubGameState = fishingSubGameStates.waitingForBite;
     }
 
+    #endregion
+
+    #region WaitingForBiteRelated
+    
     private void WaitingForBite()
     {
         // every five-ish seconds
@@ -110,7 +123,11 @@ public class FishingManager : MonoBehaviour
             return false;
         }
     }
+    
+    #endregion
 
+    #region BiteRegisteredRelated
+    
     private void BiteRegistered()
     {
         // you have 1 second to secure the hook before you lose the fish
@@ -136,4 +153,28 @@ public class FishingManager : MonoBehaviour
             }
         }
     }
+
+    #endregion
+
+    #region RhythmicReelingRelated
+
+    private void RhythmicReeling()
+    {
+        // start listening for beats
+        // if player hits on beat (with tolerance???), count up a bar 
+        // when the bar is full, you've got the fish
+    }
+
+    #endregion
+    
+    #region RhythmRelated
+    
+    // on reception of beat event, call this function
+    private void OnQuarterNote(Beat.Args beatArgs)
+    {
+        Debug.Log("this happens every quarter note");
+    }
+
+    #endregion
+    
 }
