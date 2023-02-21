@@ -84,7 +84,7 @@ public class FishingManager : MonoBehaviour
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
                 // checking input - should be refactored later
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (inputManager.PrimaryKeyDown())
                 {
                     if (CheckInputOnBeat())
                     {
