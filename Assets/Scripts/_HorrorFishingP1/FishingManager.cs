@@ -23,14 +23,9 @@ public class FishingManager : MonoBehaviour
     // for hook setting - expose to editor perhaps
     private float hookSetTimer = 0f;
     private float timeToSetHook = 1f;
-
-    // using onAwake to do subscriptions to beatEvents
-    private void Awake()
-    {
-        // this grabs the instance of clock script and calls OnBeatCallback on reception of event
-        // we should create this listener probably when we enter the state and kill it when we leave it instead of awake
-        Beat.Clock.Instance.Beat += OnBeatCallback;
-    }
+    
+    // for adding onBeatCallback listener during correct state
+    private bool onBeatCallbackAdded = false;
 
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
@@ -63,9 +58,9 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.rhythmicReeling:
                 // this is ultimately where the rhythmic element will come in
-                // because this isnt figured out yet, i'm just sending it straight to you caught the fish if you
-                // set the hook
-                //_fishingSubGameState = fishingSubGameStates.fishCaught;
+                // as such this should be where the listener gets added for the on beat event
+                // then this update is irrelevant, and things get handled in the onbeatcallack
+                AddOnBeatListener();
                 break;
             
             case fishingSubGameStates.fishCaught:
@@ -157,6 +152,23 @@ public class FishingManager : MonoBehaviour
 
     #endregion
 
+    #region RhythmicReelingRelated
+
+    public void AddOnBeatListener()
+    {
+        if (!onBeatCallbackAdded)
+        {
+            // this grabs the instance of clock script and calls OnBeatCallback on reception of event
+            Beat.Clock.Instance.Beat += OnBeatCallback;
+            Debug.Log("listener added");
+        }
+
+        onBeatCallbackAdded = true;
+
+    }
+
+    #endregion
+    
     #region RhythmRelated
     
     // on reception of beat event, call this function
