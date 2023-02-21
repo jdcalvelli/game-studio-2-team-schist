@@ -330,10 +330,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5522469650153552762, guid: 8b4f30c66d4b8421d936dbf8a5824ab1, type: 3}
-      propertyPath: BPM
-      value: 60
-      objectReference: {fileID: 0}
     - target: {fileID: 7450232400077680159, guid: 8b4f30c66d4b8421d936dbf8a5824ab1, type: 3}
       propertyPath: m_Name
       value: ShawnRhythmManager

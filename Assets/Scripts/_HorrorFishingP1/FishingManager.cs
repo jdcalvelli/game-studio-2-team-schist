@@ -27,8 +27,9 @@ public class FishingManager : MonoBehaviour
     // using onAwake to do subscriptions to beatEvents
     private void Awake()
     {
-        // this grabs the instance of clock script and calls OnQuarterNote on reception of event
-        Beat.Clock.Instance.Beat += OnQuarterNote;
+        // this grabs the instance of clock script and calls OnBeatCallback on reception of event
+        // we should create this listener probably when we enter the state and kill it when we leave it instead of awake
+        Beat.Clock.Instance.Beat += OnBeatCallback;
     }
 
     // creating fishing update that will be called by game manager
@@ -156,23 +157,20 @@ public class FishingManager : MonoBehaviour
 
     #endregion
 
-    #region RhythmicReelingRelated
-
-    private void RhythmicReeling()
-    {
-        // start listening for beats
-        // if player hits on beat (with tolerance???), count up a bar 
-        // when the bar is full, you've got the fish
-    }
-
-    #endregion
-    
     #region RhythmRelated
     
     // on reception of beat event, call this function
-    private void OnQuarterNote(Beat.Args beatArgs)
+    private void OnBeatCallback(Beat.Args beatArgs)
     {
-        Debug.Log("this happens every quarter note");
+        // here we have to check if we're in the right state
+        if (_fishingSubGameState == fishingSubGameStates.rhythmicReeling)
+        {
+            Debug.Log("-------");
+            Debug.Log(beatArgs.BeatVal);
+            Debug.Log(beatArgs.BeatTime);
+            Debug.Log(beatArgs.NextBeatTime);
+            Debug.Log("-------");
+        }
     }
 
     #endregion
