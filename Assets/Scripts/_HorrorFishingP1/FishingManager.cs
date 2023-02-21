@@ -24,6 +24,14 @@ public class FishingManager : MonoBehaviour
     private float hookSetTimer = 0f;
     private float timeToSetHook = 1f;
 
+    private InputManager inputManager;
+
+    //an initialization class that sets up the correct managers
+    public void Initialize(InputManager _im)
+    {
+        inputManager = _im;
+    }
+
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
@@ -32,7 +40,7 @@ public class FishingManager : MonoBehaviour
             case fishingSubGameStates.startSubGame:
                 // on spacebar press cast the line
                 // once again, this should be moved into an input manager
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (inputManager.PrimaryKeyDown())
                 {
                     CastRod();
                 }
@@ -128,7 +136,7 @@ public class FishingManager : MonoBehaviour
         {
             // listen for space bar input
             // should go into input manager
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (inputManager.PrimaryKeyDown())
             {
                 // fish has been set
                 Debug.Log("hook has been set, now reel");
