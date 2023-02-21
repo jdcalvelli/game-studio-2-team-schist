@@ -171,18 +171,15 @@ public class FishingManager : MonoBehaviour
     
     #region RhythmRelated
     
-    // on reception of beat event, call this function
+    // event is only added when we're in the correct state, at which point we should execute
+    // the following logic
     private void OnBeatCallback(Beat.Args beatArgs)
     {
-        // here we have to check if we're in the right state
-        if (_fishingSubGameState == fishingSubGameStates.rhythmicReeling)
-        {
-            Debug.Log("-------");
-            Debug.Log(beatArgs.BeatVal);
-            Debug.Log(beatArgs.BeatTime);
-            Debug.Log(beatArgs.NextBeatTime);
-            Debug.Log("-------");
-        }
+        Debug.Log("-------");
+        Debug.Log(beatArgs.BeatVal);
+        Debug.Log(beatArgs.BeatTime);
+        Debug.Log(beatArgs.NextBeatTime);
+        Debug.Log("-------");
     }
 
     #endregion
