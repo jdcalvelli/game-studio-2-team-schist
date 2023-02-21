@@ -9,9 +9,12 @@ public class GameManager : MonoBehaviour
     
     // get references to subgame managers
     [SerializeField] private FishingManager fishingManager;
-    
+    [SerializeField] private InputManager inputManager;
     void Start()
     {
+        // tells the fishing manager how to get inputs
+        //actually somewhat wondering if it's better to do this through the GameManager, just pass things back and forth. Maybe not.
+        fishingManager.Initialize(inputManager);
         // on game start set state to be onBoat for now
         _gameStates = States.GameStates.onBoat;
     }
