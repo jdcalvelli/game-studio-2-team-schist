@@ -73,9 +73,23 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.biteRegistered:
                 // you have a certain amount of time to hook the fish
-                // fix the call to input within this function to be outside of it on same level as other input calls
-                // for easier refactoring later
-                BiteRegistered();
+                IncrementBiteTimer();
+                if (inputManager.PrimaryKeyDown() && hookSetTimer < timeToSetHook)
+                {
+                    // fish has been set
+                    Debug.Log("hook has been set, now reel");
+                    _fishingSubGameState = fishingSubGameStates.rhythmicReeling;
+                    // reset hook set timer
+                    hookSetTimer -= timeToSetHook;
+                }
+                else if (hookSetTimer > timeToSetHook)
+                {
+                    Debug.Log("fish lost");
+                    // go to fishlost state
+                    _fishingSubGameState = fishingSubGameStates.fishLost;
+                    // reset hook set timer
+                    hookSetTimer = hookSetTimer - timeToSetHook;
+                }
                 break;
             
             case fishingSubGameStates.rhythmicReeling:
@@ -84,7 +98,7 @@ public class FishingManager : MonoBehaviour
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
                 // checking input - should be refactored later
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (inputManager.PrimaryKeyDown())
                 {
                     if (CheckInputOnBeat())
                     {
@@ -183,30 +197,10 @@ public class FishingManager : MonoBehaviour
 
     #region BiteRegisteredRelated
     
-    private void BiteRegistered()
+    private void IncrementBiteTimer()
     {
         // you have 1 second to secure the hook before you lose the fish
         hookSetTimer += Time.deltaTime;
-
-        if (hookSetTimer > timeToSetHook)
-        {
-            Debug.Log("fish lost");
-            // go to fishlost state
-            _fishingSubGameState = fishingSubGameStates.fishLost;
-            // reset hook set timer
-            hookSetTimer = hookSetTimer - timeToSetHook;
-        }
-        else
-        {
-            // listen for space bar input
-            // should go into input manager
-            if (inputManager.PrimaryKeyDown())
-            {
-                // fish has been set
-                Debug.Log("hook has been set, now reel");
-                _fishingSubGameState = fishingSubGameStates.rhythmicReeling;
-            }
-        }
     }
 
     #endregion
