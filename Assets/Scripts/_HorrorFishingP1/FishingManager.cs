@@ -101,7 +101,6 @@ public class FishingManager : MonoBehaviour
                 else if (hookSetTimer > timeToSetHook)
                 {
                     Debug.Log("fish lost");
-                    _noteView.Animate_NoteDisappear();
                     // go to fishlost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
                     // reset hook set timer
@@ -148,8 +147,6 @@ public class FishingManager : MonoBehaviour
                 {
                     // switch to fish lost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
-                    // hide note display on failure
-                    _noteView.Animate_NoteDisappear();
                     // remove the listener
                     RemoveOnBeatListener();
                     // reset miss counter
@@ -168,6 +165,8 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.fishLost:
                 // restart game
+                // hide note display on failure
+                _noteView.Animate_NoteDisappear();
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
                 break;
         }
@@ -183,6 +182,7 @@ public class FishingManager : MonoBehaviour
         // all it does for now is switch between states
         _fishingSubGameState = fishingSubGameStates.rodCast;
         // Play fishing rod view animation
+        // This does not wait to complete before switching states; leads to animation bugs
         _fishingRodView.Animate_CastRod();
         Debug.Log("line cast!");
         _fishingSubGameState = fishingSubGameStates.waitingForBite;
