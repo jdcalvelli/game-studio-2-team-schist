@@ -40,6 +40,22 @@ public class FishingManager : MonoBehaviour
 
     private InputManager inputManager;
 
+    // Views Setup - FishingManager
+    [SerializeField] private GameObject _fishingRodObject;
+    private FishingRodView _fishingRodView;
+
+    [SerializeField] private GameObject _fishObject;
+    private FishView _fishView;
+
+    [SerializeField] private GameObject _noteObject;
+    private NoteView _noteView;
+
+    private void Start() {
+        _fishingRodView = _fishingRodObject.GetComponent<FishingRodView>();
+        _fishView = _fishObject.GetComponent<FishView>();
+        _noteView = _noteObject.GetComponent<NoteView>();
+    }
+
     //an initialization class that sets up the correct managers
     public void Initialize(InputManager _im)
     {
@@ -103,12 +119,14 @@ public class FishingManager : MonoBehaviour
                     if (CheckInputOnBeat())
                     {
                         Debug.Log("hit on beat");
+                        _noteView.Animate_NoteHit();
                         // increment a hit counter 
                         hitCounter++;
                     }
                     else
                     {
                         Debug.Log("missed the beat");
+                        _noteView.Animate_NoteMiss();
                         // increment a miss counter
                         missCounter++;
                     }
@@ -138,12 +156,17 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
+                // hide note display and show fish on success
+                _noteView.Animate_NoteDisappear();
+                _fishView.Animate_FishCaught();
                 // restart game
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
                 break;
             
             case fishingSubGameStates.fishLost:
                 // restart game
+                // hide note display on failure
+                _noteView.Animate_NoteDisappear();
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
                 break;
         }
@@ -158,6 +181,9 @@ public class FishingManager : MonoBehaviour
         // this should also ultimately trigger anims on the fishingRodView - remember model view controller :D
         // all it does for now is switch between states
         _fishingSubGameState = fishingSubGameStates.rodCast;
+        // Play fishing rod view animation
+        // This does not wait to complete before switching states; leads to animation bugs
+        _fishingRodView.Animate_CastRod();
         Debug.Log("line cast!");
         _fishingSubGameState = fishingSubGameStates.waitingForBite;
     }
@@ -174,6 +200,7 @@ public class FishingManager : MonoBehaviour
             if (CheckFishIsBiting())
             {
                 Debug.Log("you have a bite, now set the hook");
+                _fishingRodView.Animate_FishIsBiting();
                 _fishingSubGameState = fishingSubGameStates.biteRegistered;
             }
         }
@@ -214,6 +241,7 @@ public class FishingManager : MonoBehaviour
         {
             // this grabs the instance of clock script and calls OnBeatCallback on reception of event
             Beat.Clock.Instance.Beat += OnBeatCallback;
+            _noteView.Animate_NoteAppear();
             Debug.Log("listener added");
         }
 
