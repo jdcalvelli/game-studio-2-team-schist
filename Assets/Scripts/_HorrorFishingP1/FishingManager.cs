@@ -101,6 +101,7 @@ public class FishingManager : MonoBehaviour
                 else if (hookSetTimer > timeToSetHook)
                 {
                     Debug.Log("fish lost");
+                    _noteView.Animate_NoteDisappear();
                     // go to fishlost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
                     // reset hook set timer
@@ -119,12 +120,14 @@ public class FishingManager : MonoBehaviour
                     if (CheckInputOnBeat())
                     {
                         Debug.Log("hit on beat");
+                        _noteView.Animate_NoteHit();
                         // increment a hit counter 
                         hitCounter++;
                     }
                     else
                     {
                         Debug.Log("missed the beat");
+                        _noteView.Animate_NoteMiss();
                         // increment a miss counter
                         missCounter++;
                     }
@@ -145,6 +148,8 @@ public class FishingManager : MonoBehaviour
                 {
                     // switch to fish lost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
+                    // hide note display on failure
+                    _noteView.Animate_NoteDisappear();
                     // remove the listener
                     RemoveOnBeatListener();
                     // reset miss counter
@@ -154,6 +159,9 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
+                // hide note display and show fish on success
+                _noteView.Animate_NoteDisappear();
+                _fishView.Animate_FishCaught();
                 // restart game
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
                 break;
@@ -233,6 +241,7 @@ public class FishingManager : MonoBehaviour
         {
             // this grabs the instance of clock script and calls OnBeatCallback on reception of event
             Beat.Clock.Instance.Beat += OnBeatCallback;
+            _noteView.Animate_NoteAppear();
             Debug.Log("listener added");
         }
 
