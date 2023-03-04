@@ -13,7 +13,7 @@ public class CleaningManager : MonoBehaviour
         pullInnards,
         shaveScales,
         storeInCooler,
-        endSubGame;
+        endSubGame,
     }
 
     private cleaningSubGameStates _cleaningSubGameState = cleaningSubGameStates.startSubGame;
