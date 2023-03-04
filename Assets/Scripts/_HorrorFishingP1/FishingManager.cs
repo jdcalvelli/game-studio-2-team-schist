@@ -10,19 +10,20 @@ public class FishingManager : MonoBehaviour
     private enum fishingSubGameStates
     {
         startSubGame,
-        rodCast,
+        rhythmDown,
         waitingForBite,
         biteRegistered,
-        rhythmicReeling,
+        rhythmUp,
         fishCaught,
         fishLost,
     }
 
     private fishingSubGameStates _fishingSubGameState = fishingSubGameStates.startSubGame;
 
-    // for hook setting - expose to editor perhaps
-    private float hookSetTimer = 0f;
+    // timers - expose to editor perhaps
+    private float timer = 0f;
     private float timeToSetHook = 1f;
+    private float timeToSinkHook = 5f;
     
     // for adding onBeatCallback listener during correct state
     private bool onBeatCallbackAdded = false;
@@ -33,6 +34,9 @@ public class FishingManager : MonoBehaviour
     // setting the tolerance window for acceptable hits
     private double toleranceWindow = 0.5d;
     
+    // doom variable for which fish you get
+    private int doomVar = 0;
+
     // for hit counting
     private int hitCounter;
     // for miss counting
@@ -77,8 +81,31 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.rodCast:
-                // unused now but might be relevant later
+            case fishingSubGameStates.rhythmDown:
+                // need to drop hook on rhythm
+                // first adding the listener
+                AddOnBeatListener();
+                IncrementTimer();
+                if (inputManager.PrimaryKeyDown() && timer < timeToSinkHook)
+                {
+                    // check if input is NOT beat
+                    if (!CheckInputOnBeat())
+                    {
+                        // increment doom variable
+                        doomVar++;
+                    }
+                }
+                else if (timer > timeToSinkHook)
+                {
+                    // just printing doom variable for now
+                    Debug.Log(doomVar);
+                    // move to the next state to wait for bite
+                    _fishingSubGameState = fishingSubGameStates.waitingForBite;
+                    // resetting timer
+                    timer -= timeToSinkHook;
+                    // removing listener
+                    RemoveOnBeatListener();
+                }
                 break;
             
             case fishingSubGameStates.waitingForBite:
@@ -89,26 +116,28 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.biteRegistered:
                 // you have a certain amount of time to hook the fish
-                IncrementBiteTimer();
-                if (inputManager.PrimaryKeyDown() && hookSetTimer < timeToSetHook)
+                // this gets caught by dotween but should ultimately be refactored to only be called once later
+                _noteView.Animate_NoteAppear();
+                IncrementTimer();
+                if (inputManager.PrimaryKeyDown() && timer < timeToSetHook)
                 {
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
-                    _fishingSubGameState = fishingSubGameStates.rhythmicReeling;
+                    _fishingSubGameState = fishingSubGameStates.rhythmUp;
                     // reset hook set timer
-                    hookSetTimer -= timeToSetHook;
+                    timer -= timeToSetHook;
                 }
-                else if (hookSetTimer > timeToSetHook)
+                else if (timer > timeToSetHook)
                 {
                     Debug.Log("fish lost");
                     // go to fishlost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
                     // reset hook set timer
-                    hookSetTimer = hookSetTimer - timeToSetHook;
+                    timer -= timeToSetHook;
                 }
                 break;
             
-            case fishingSubGameStates.rhythmicReeling:
+            case fishingSubGameStates.rhythmUp:
                 // this is ultimately where the rhythmic element will come in
                 // as such this should be where the listener gets added for the on beat event
                 // then this update is irrelevant, and things get handled in the onbeatcallack
@@ -142,6 +171,7 @@ public class FishingManager : MonoBehaviour
                     RemoveOnBeatListener();
                     // reset hit counter
                     hitCounter = 0;
+                    missCounter = 0;
                 }
                 else if (missCounter >= 4)
                 {
@@ -150,6 +180,7 @@ public class FishingManager : MonoBehaviour
                     // remove the listener
                     RemoveOnBeatListener();
                     // reset miss counter
+                    hitCounter = 0;
                     missCounter = 0;
                 }
                 break;
@@ -180,12 +211,11 @@ public class FishingManager : MonoBehaviour
     {
         // this should also ultimately trigger anims on the fishingRodView - remember model view controller :D
         // all it does for now is switch between states
-        _fishingSubGameState = fishingSubGameStates.rodCast;
         // Play fishing rod view animation
         // This does not wait to complete before switching states; leads to animation bugs
         _fishingRodView.Animate_CastRod();
         Debug.Log("line cast!");
-        _fishingSubGameState = fishingSubGameStates.waitingForBite;
+        _fishingSubGameState = fishingSubGameStates.rhythmDown;
     }
 
     #endregion
@@ -222,17 +252,17 @@ public class FishingManager : MonoBehaviour
     
     #endregion
 
-    #region BiteRegisteredRelated
+    #region TimerHelper
     
-    private void IncrementBiteTimer()
+    private void IncrementTimer()
     {
-        // you have 1 second to secure the hook before you lose the fish
-        hookSetTimer += Time.deltaTime;
+        // increment passed in timer based on time delta time
+        timer += Time.deltaTime;
     }
 
     #endregion
 
-    #region RhythmicReelingRelated
+    #region RhythmRelated
     
     // these two can be refactored into one function later - like UpdateOnBeatListener or something
     private void AddOnBeatListener()
@@ -241,7 +271,6 @@ public class FishingManager : MonoBehaviour
         {
             // this grabs the instance of clock script and calls OnBeatCallback on reception of event
             Beat.Clock.Instance.Beat += OnBeatCallback;
-            _noteView.Animate_NoteAppear();
             Debug.Log("listener added");
         }
 
@@ -260,27 +289,6 @@ public class FishingManager : MonoBehaviour
 
         onBeatCallbackAdded = false;
     }
-
-    // because we cant check for input on alternate threads, what we're going to do is
-    // essentially check if the player presses space within the time frame presented
-    private bool CheckInputOnBeat()
-    {
-        // want to check if the dsptime at this point is within a tolerance window of the
-        // correct beat time as set by the clock script
-        if (AudioSettings.dspTime > beatTime - toleranceWindow 
-            && AudioSettings.dspTime < beatTime + toleranceWindow)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    #endregion
-    
-    #region RhythmRelated
     
     // event is only added when we're in the correct state, at which point we should execute
     // the following logic on each beat
@@ -298,6 +306,23 @@ public class FishingManager : MonoBehaviour
         // Debug.Log(beatArgs.BeatTime);
         // Debug.Log(beatArgs.NextBeatTime);
         // Debug.Log("-------");
+    }
+    
+    // because we cant check for input on alternate threads, what we're going to do is
+    // essentially check if the player presses space within the time frame presented
+    private bool CheckInputOnBeat()
+    {
+        // want to check if the dsptime at this point is within a tolerance window of the
+        // correct beat time as set by the clock script
+        if (AudioSettings.dspTime > beatTime - toleranceWindow 
+            && AudioSettings.dspTime < beatTime + toleranceWindow)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     #endregion
