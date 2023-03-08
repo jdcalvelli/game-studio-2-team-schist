@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using static Fish;
 
-public class BadFish : Fish
+public class AnglerBad : Fish
 {
 
-    public BadFish()
+    new Alignment alignment = Alignment.Bad;
+
+    
+    
+    public AnglerBad()
     {
         this.alignment = Alignment.Bad;
     }

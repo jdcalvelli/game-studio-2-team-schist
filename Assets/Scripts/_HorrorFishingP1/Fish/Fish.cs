@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Fish
+public abstract class Fish : MonoBehaviour
 {
 
     //a prototype class that all specific fish are derived from

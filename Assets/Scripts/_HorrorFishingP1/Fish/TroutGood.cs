@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GoodFish : Fish
+public class TroutGood : Fish
 {
     new Alignment alignment = Alignment.Good;
 
 
 
-    public GoodFish()
+    public TroutGood()
     {
         this.alignment = Alignment.Good;
     }
