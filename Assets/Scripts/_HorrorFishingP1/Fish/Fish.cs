@@ -2,22 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Fish : MonoBehaviour
+public class Fish : MonoBehaviour
 {
 
     //a prototype class that all specific fish are derived from
 
     #region declarations
 
-    protected Sprite sprite;
+    [SerializeField] protected Sprite sprite;
     public enum Alignment
     {
-        Bad,
-        Good,
+        BAD,
+        GOOD,
     }
 
-    protected Alignment alignment;
-    protected string name;
+    [SerializeField] protected Alignment alignment;
+
 
     #endregion
 

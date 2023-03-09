@@ -21,4 +21,22 @@ public class FishSpawner : MonoBehaviour
         }
     }
 
+
+    //use this at the beginning to sort the fish from the allFish array
+
+    public void InitializeFish()
+    {
+        foreach(Fish fish in allFish)
+        {
+            if (fish.GetAlignment() == Fish.Alignment.GOOD)
+            {
+                goodFish[goodFish.Length-1] = fish;
+            }
+            else
+            {
+                badFish[badFish.Length - 1] = fish;
+            }
+        }
+    }
+
 }

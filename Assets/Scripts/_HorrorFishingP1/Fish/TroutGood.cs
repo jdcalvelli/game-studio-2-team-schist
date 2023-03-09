@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class TroutGood : Fish
 {
-    new Alignment alignment = Alignment.Good;
+    new Alignment alignment = Alignment.GOOD;
 
 
 
     public TroutGood()
     {
-        this.alignment = Alignment.Good;
+        this.alignment = Alignment.GOOD;
     }
 
 

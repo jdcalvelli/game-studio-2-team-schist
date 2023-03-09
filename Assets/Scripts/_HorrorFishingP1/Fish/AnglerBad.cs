@@ -6,13 +6,13 @@ using static Fish;
 public class AnglerBad : Fish
 {
 
-    new Alignment alignment = Alignment.Bad;
+    new Alignment alignment = Alignment.BAD;
 
     
     
     public AnglerBad()
     {
-        this.alignment = Alignment.Bad;
+        this.alignment = Alignment.BAD;
     }
 
 }
