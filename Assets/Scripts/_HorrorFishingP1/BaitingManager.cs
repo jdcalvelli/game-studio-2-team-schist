@@ -15,6 +15,7 @@ public class BaitingManager : MonoBehaviour
 
     private baitingSubGameStates _baitingSubGameState = baitingSubGameStates.startBaitingGame;
 
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
     public void BaitingSubGameUpdate()
     {
@@ -44,6 +45,11 @@ public class BaitingManager : MonoBehaviour
                     _baitingSubGameState = baitingSubGameStates.endSubGame;
                 }
 
+                break;
+            
+            case baitingSubGameStates.endSubGame:
+                // bubble up a call to game manager to change state
+                gameManager.SetGameState(States.GameStates.isFishing);
                 break;
 
         }    

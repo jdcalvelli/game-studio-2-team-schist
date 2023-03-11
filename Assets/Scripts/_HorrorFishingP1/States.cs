@@ -11,7 +11,9 @@ public class States
     {
         gameStart,
         onBoat,
+        isBaiting,
         isFishing,
+        isCleaning,
         gameEnd
     }
     
