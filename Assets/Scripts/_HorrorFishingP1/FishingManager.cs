@@ -7,7 +7,7 @@ public class FishingManager : MonoBehaviour
 {
     // states related to fishing minigame
     // could be moved into another class later
-    private enum fishingSubGameStates
+    public enum fishingSubGameStates
     {
         startSubGame,
         rhythmDown,
@@ -202,6 +202,10 @@ public class FishingManager : MonoBehaviour
                 break;
         }
     }
+
+    public void ChangeState(fishingSubGameStates state) {
+        _fishingSubGameState = state;
+    }
     
     // when fishing, there should be a chance for a bite, then player needs to hook, then they need to reel
 
@@ -213,9 +217,8 @@ public class FishingManager : MonoBehaviour
         // all it does for now is switch between states
         // Play fishing rod view animation
         // This does not wait to complete before switching states; leads to animation bugs
-        _fishingRodView.Animate_CastRod();
-        Debug.Log("line cast!");
-        _fishingSubGameState = fishingSubGameStates.rhythmDown;
+        StartCoroutine(_fishingRodView.Animate_CastRod());
+        //_fishingSubGameState = fishingSubGameStates.rhythmDown;
     }
 
     #endregion
@@ -230,8 +233,8 @@ public class FishingManager : MonoBehaviour
             if (CheckFishIsBiting())
             {
                 Debug.Log("you have a bite, now set the hook");
-                _fishingRodView.Animate_FishIsBiting();
-                _fishingSubGameState = fishingSubGameStates.biteRegistered;
+                StartCoroutine(_fishingRodView.Animate_FishIsBiting());
+                //_fishingSubGameState = fishingSubGameStates.biteRegistered;
             }
         }
     }

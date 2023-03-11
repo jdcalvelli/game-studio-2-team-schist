@@ -269,6 +269,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 32207906}
     m_Modifications:
+    - target: {fileID: 1849283577368388102, guid: 830e8a807025d52408b73613edb62179, type: 3}
+      propertyPath: fishingManager
+      value: 
+      objectReference: {fileID: 513129863}
     - target: {fileID: 2806056849758501993, guid: 830e8a807025d52408b73613edb62179, type: 3}
       propertyPath: m_RootOrder
       value: 0
