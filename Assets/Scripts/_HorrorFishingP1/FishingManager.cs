@@ -16,6 +16,7 @@ public class FishingManager : MonoBehaviour
         rhythmUp,
         fishCaught,
         fishLost,
+        endSubGame,
     }
 
     private fishingSubGameStates _fishingSubGameState = fishingSubGameStates.startSubGame;
@@ -42,7 +43,8 @@ public class FishingManager : MonoBehaviour
     // for miss counting
     private int missCounter;
 
-    private InputManager inputManager;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private InputManager inputManager;
 
     // Views Setup - FishingManager
     [SerializeField] private GameObject _fishingRodObject;
@@ -59,14 +61,7 @@ public class FishingManager : MonoBehaviour
         _fishView = _fishObject.GetComponent<FishView>();
         _noteView = _noteObject.GetComponent<NoteView>();
     }
-
-    //an initialization class that sets up the correct managers
-    public void Initialize(InputManager _im)
-    {
-        inputManager = _im;
-    }
-
-
+    
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
@@ -191,7 +186,7 @@ public class FishingManager : MonoBehaviour
                 _noteView.Animate_NoteDisappear();
                 _fishView.Animate_FishCaught();
                 // restart game
-                _fishingSubGameState = fishingSubGameStates.startSubGame;
+                _fishingSubGameState = fishingSubGameStates.endSubGame;
                 break;
             
             case fishingSubGameStates.fishLost:
@@ -199,6 +194,11 @@ public class FishingManager : MonoBehaviour
                 // hide note display on failure
                 _noteView.Animate_NoteDisappear();
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
+                break;
+            
+            case fishingSubGameStates.endSubGame:
+                // bubble up call to change state
+                gameManager.SetGameState(States.GameStates.isCleaning);
                 break;
         }
     }

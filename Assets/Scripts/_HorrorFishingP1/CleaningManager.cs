@@ -18,12 +18,8 @@ public class CleaningManager : MonoBehaviour
 
     private cleaningSubGameStates _cleaningSubGameState = cleaningSubGameStates.startSubGame;
 
-    private InputManager inputManager;
-
-    public void Initialize(InputManager _im)
-    {
-        inputManager = _im;
-    }
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private InputManager inputManager;
 
     public void CleaningSubGameUpdate() {
         switch (_cleaningSubGameState)
@@ -71,6 +67,11 @@ public class CleaningManager : MonoBehaviour
                 _cleaningSubGameState = cleaningSubGameStates.endSubGame;
                 break;
                 //end subgame
+            
+            case (cleaningSubGameStates.endSubGame):
+                // bubble up a call to change state
+                gameManager.SetGameState(States.GameStates.onBoat);
+                break;
         }
     }
 
