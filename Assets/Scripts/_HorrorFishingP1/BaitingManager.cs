@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,6 +18,8 @@ public class BaitingManager : MonoBehaviour
     
     private TextMeshPro test1;
     private TextMeshPro test2;
+    
+    [SerializeField] private BaitingAssetGenerator _generator;
 
     private GameObject baitingHolder;
     
@@ -32,6 +35,8 @@ public class BaitingManager : MonoBehaviour
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
+    
+
     public void BaitingSubGameUpdate()
     {
         switch (_baitingSubGameState)
@@ -147,6 +152,7 @@ public class BaitingManager : MonoBehaviour
         test1 = Instantiate(text1);
         test2 = Instantiate(text2);
 
+        _generator.BaitingAssetGenerate();
         //test1.transform.SetParent(baitingHolder.transform);
         //test2.transform.SetParent(baitingHolder.transform);
         
