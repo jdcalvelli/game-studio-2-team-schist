@@ -6,8 +6,8 @@ public class FishSpawner : MonoBehaviour
 {
 
     public Fish[] allFish;
-    public Fish[] goodFish;
-    public Fish[] badFish;
+    private Fish[] goodFish;
+    private Fish[] badFish;
 
     public Fish GetFish(float _doom)
     {
