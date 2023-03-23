@@ -5,12 +5,10 @@ using DG.Tweening;
 
 public class FishingRodView : MonoBehaviour
 {
-    private float rodCastTimer = 1f;
-    private float lineFlyTimer = 0.1f;
+    public float rodCastTimer = 1f;
+    public float lineFlyTimer = 0.1f;
 
-    [SerializeField] private FishingManager fishingManager;
-
-    public IEnumerator Animate_CastRod() {
+    public void Animate_CastRod() {
         Sequence seq = DOTween.Sequence();
         Vector3 originalRodPosition = transform.position;
         Vector3 originalScale = transform.localScale;
@@ -24,19 +22,9 @@ public class FishingRodView : MonoBehaviour
             transform.DORotate(Vector3.zero, lineFlyTimer);
         }));
 
-        yield return new WaitForSeconds(rodCastTimer + lineFlyTimer);
-
-        fishingManager.ChangeState(FishingManager.fishingSubGameStates.waitingForBite);
-        Debug.Log("line cast!");
-
     }
 
-    public IEnumerator Animate_FishIsBiting() {
-        Tween tween = transform.DOShakePosition(1f, new Vector3(0.15f, 0f, 0f), 10, 0f, false, false);
-
-        yield return tween.WaitForCompletion();
-
-        fishingManager.ChangeState(FishingManager.fishingSubGameStates.biteRegistered);
-        Debug.Log("you have a bite, now reel");
+    public void Animate_FishIsBiting() {
+        transform.DOShakePosition(1f, new Vector3(0.15f, 0f, 0f), 10, 0f, false, false);
     }
 }
