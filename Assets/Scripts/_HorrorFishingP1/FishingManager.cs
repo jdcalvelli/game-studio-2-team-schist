@@ -25,6 +25,7 @@ public class FishingManager : MonoBehaviour
     private float timer = 0f;
     private float timeToSetHook = 1f;
     private float timeToSinkHook = 5f;
+    private float waitingForBiteOffsetTimer = 1.5f;
     
     // for adding onBeatCallback listener during correct state
     private bool onBeatCallbackAdded = false;
@@ -72,7 +73,7 @@ public class FishingManager : MonoBehaviour
                 // once again, this should be moved into an input manager
                 if (inputManager.PrimaryKeyDown())
                 {
-                    CastRod();
+                    StartCoroutine(CastRod());
                 }
                 break;
             
@@ -106,18 +107,24 @@ public class FishingManager : MonoBehaviour
             case fishingSubGameStates.waitingForBite:
                 // over time increase the chances of getting a bite
                 // Debug.Log("waiting for bite");
-                WaitingForBite();
+                if (waitingForBiteOffsetTimer <= 0f) {
+                    WaitingForBite();
+                }
+                else {
+                    waitingForBiteOffsetTimer -= Time.deltaTime;
+                }
                 break;
             
             case fishingSubGameStates.biteRegistered:
                 // you have a certain amount of time to hook the fish
                 // this gets caught by dotween but should ultimately be refactored to only be called once later
-                _noteView.Animate_NoteAppear();
+                waitingForBiteOffsetTimer = 1.5f;
                 IncrementTimer();
                 if (inputManager.PrimaryKeyDown() && timer < timeToSetHook)
                 {
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
+                    _noteView.Animate_NoteAppear();
                     _fishingSubGameState = fishingSubGameStates.rhythmUp;
                     // reset hook set timer
                     timer -= timeToSetHook;
@@ -207,15 +214,16 @@ public class FishingManager : MonoBehaviour
 
     #region RodCastRelated
 
-    private void CastRod()
+    private IEnumerator CastRod()
     {
         // this should also ultimately trigger anims on the fishingRodView - remember model view controller :D
         // all it does for now is switch between states
         // Play fishing rod view animation
-        // This does not wait to complete before switching states; leads to animation bugs
         _fishingRodView.Animate_CastRod();
+        yield return new WaitForSeconds(_fishingRodView.rodCastTimer + _fishingRodView.lineFlyTimer);
+    
+        _fishingSubGameState = fishingSubGameStates.waitingForBite;
         Debug.Log("line cast!");
-        _fishingSubGameState = fishingSubGameStates.rhythmDown;
     }
 
     #endregion
@@ -229,8 +237,8 @@ public class FishingManager : MonoBehaviour
         {
             if (CheckFishIsBiting())
             {
-                Debug.Log("you have a bite, now set the hook");
                 _fishingRodView.Animate_FishIsBiting();
+                Debug.Log("you have a bite, now set the hook");
                 _fishingSubGameState = fishingSubGameStates.biteRegistered;
             }
         }
