@@ -14,4 +14,13 @@ public class InputManager : MonoBehaviour
         return false;
     }
 
+    public bool PrimaryKeyUp()
+    {
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }
