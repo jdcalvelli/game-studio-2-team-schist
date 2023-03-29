@@ -5,17 +5,16 @@ using DG.Tweening;
 
 public class NoteView : MonoBehaviour
 {
-    private SpriteRenderer noteSprite;
-    private int originalRotation;
+    [SerializeField] private SpriteRenderer noteSprite;
 
-    void Awake() {
-        noteSprite = gameObject.GetComponent<SpriteRenderer>();
-    }
+    [SerializeField] private GameObject beatBar;
+    [SerializeField] private SpriteRenderer beatBarSprite;
 
     // Waddling rotation animation for note gradually weakens, I can't figure out why
     public void Animate_NoteAppear() {
         noteSprite.DOFade(255, 0.5f);
-
+        //transform.position = new Vector3(beatBar.transform.position.x + beatBarSprite.sprite.rect.width, beatBar.transform.position.y + (beatBarSprite.sprite.rect.height / 2f), 0f);
+        transform.position = new Vector3(8f, 0f, 0f);
         transform.DORotate(new Vector3(0, 0, -15), 0.75f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
     }
 
@@ -41,5 +40,14 @@ public class NoteView : MonoBehaviour
             noteSprite.DOColor(originalColor, 0.25f);
             transform.DOScale(originalScale, 0.25f);
         });
+    }
+
+    public IEnumerator Animate_MoveNoteAlongBar(float timeBetweenBeats) {
+        // move note along bar
+        Animate_NoteAppear();
+        //transform.DOMove(new Vector3(beatBar.transform.position.x + (noteSprite.sprite.rect.width / 2f), beatBar.transform.position.y + (noteSprite.sprite.rect.height / 2f), 0f), timeBetweenBeats);
+        transform.DOMove(Vector3.zero, timeBetweenBeats).SetEase(Ease.Linear);
+        yield return new WaitForSeconds(timeBetweenBeats);
+        Animate_NoteDisappear();
     }
 }

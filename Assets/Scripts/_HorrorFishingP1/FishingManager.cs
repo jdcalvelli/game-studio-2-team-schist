@@ -35,6 +35,9 @@ public class FishingManager : MonoBehaviour
     private double nextBeatTime;
     // setting the tolerance window for acceptable hits
     private double toleranceWindow = 0.5d;
+
+    // flag to only spawn notes after each other
+    private bool noteSpawnFlag = true;
     
     // doom variable for which fish you get
     private int doomVar = 0;
@@ -47,21 +50,13 @@ public class FishingManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
 
+    [SerializeField] private GameObject _notePrefab;
+
     // Views Setup - FishingManager
-    [SerializeField] private GameObject _fishingRodObject;
-    private FishingRodView _fishingRodView;
-
-    [SerializeField] private GameObject _fishObject;
-    private FishView _fishView;
-
-    [SerializeField] private GameObject _noteObject;
-    private NoteView _noteView;
-
-    private void Start() {
-        _fishingRodView = _fishingRodObject.GetComponent<FishingRodView>();
-        _fishView = _fishObject.GetComponent<FishView>();
-        _noteView = _noteObject.GetComponent<NoteView>();
-    }
+    [SerializeField] private FishingRodView _fishingRodView;
+    [SerializeField] private FishView _fishView;
+    [SerializeField] private NoteView _noteView;
+    [SerializeField] private BeatBarView _beatBarView;
     
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
@@ -124,7 +119,9 @@ public class FishingManager : MonoBehaviour
                 {
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
-                    _noteView.Animate_NoteAppear();
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
+                    //_noteView.Animate_NoteAppear();
+                    StartCoroutine(SpawnNoteOnBar());
                     _fishingSubGameState = fishingSubGameStates.rhythmUp;
                     // reset hook set timer
                     timer -= timeToSetHook;
@@ -144,6 +141,11 @@ public class FishingManager : MonoBehaviour
                 // as such this should be where the listener gets added for the on beat event
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
+
+                if (noteSpawnFlag) {
+                    StartCoroutine(SpawnNoteOnBar());
+                }
+
                 // checking input - should be refactored later
                 if (inputManager.PrimaryKeyDown())
                 {
@@ -167,6 +169,7 @@ public class FishingManager : MonoBehaviour
                 // using arbitrary hits and misses for now
                 if (hitCounter >= 4)
                 {
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish caught state
                     _fishingSubGameState = fishingSubGameStates.fishCaught;
                     // remove the beat listener
@@ -177,6 +180,7 @@ public class FishingManager : MonoBehaviour
                 }
                 else if (missCounter >= 4)
                 {
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish lost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
                     // remove the listener
@@ -208,6 +212,15 @@ public class FishingManager : MonoBehaviour
                 gameManager.SetGameState(States.GameStates.isCleaning);
                 break;
         }
+    }
+
+    private IEnumerator SpawnNoteOnBar() {
+        noteSpawnFlag = false;
+        yield return new WaitForSeconds(1f);
+        GameObject tmpNote = Instantiate(_notePrefab);
+        // Not sure how to directly incorporate the beat timing yet, I know it's explicitly 1f for now
+        StartCoroutine(tmpNote.GetComponent<NoteView>().Animate_MoveNoteAlongBar(1f));
+        noteSpawnFlag = true;
     }
     
     // when fishing, there should be a chance for a bite, then player needs to hook, then they need to reel
