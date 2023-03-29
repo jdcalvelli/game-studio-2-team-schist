@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4596076566840070485}
   - component: {fileID: 5236538602258473150}
+  - component: {fileID: 3464655174550651505}
   m_Layer: 0
   m_Name: Fish
   m_TagString: Untagged
@@ -44,5 +45,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a192e32d60c904347ada4862e10134e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
   alignment: 0
-  name: 
+--- !u!114 &3464655174550651505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4973743622642569911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42c2228e88035af45b85693f540ef04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
