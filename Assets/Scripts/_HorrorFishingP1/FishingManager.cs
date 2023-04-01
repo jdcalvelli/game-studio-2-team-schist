@@ -38,6 +38,9 @@ public class FishingManager : MonoBehaviour
 
     // flag to only spawn notes after each other
     private bool noteSpawnFlag = true;
+    private NoteView currentNoteView = null;
+    private GameObject currentNote = null;
+    private GameObject nextNote = null;
     
     // doom variable for which fish you get
     private int doomVar = 0;
@@ -152,14 +155,14 @@ public class FishingManager : MonoBehaviour
                     if (CheckInputOnBeat())
                     {
                         Debug.Log("hit on beat");
-                        _noteView.Animate_NoteHit();
+                        currentNoteView.Animate_NoteHit();
                         // increment a hit counter 
                         hitCounter++;
                     }
                     else
                     {
                         Debug.Log("missed the beat");
-                        _noteView.Animate_NoteMiss();
+                        currentNoteView.Animate_NoteMiss();
                         // increment a miss counter
                         missCounter++;
                     }
@@ -194,7 +197,7 @@ public class FishingManager : MonoBehaviour
             case fishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
                 // hide note display and show fish on success
-                _noteView.Animate_NoteDisappear();
+                currentNoteView.Animate_NoteDisappear();
                 _fishView.Animate_FishCaught();
                 // restart game
                 _fishingSubGameState = fishingSubGameStates.endSubGame;
@@ -203,7 +206,9 @@ public class FishingManager : MonoBehaviour
             case fishingSubGameStates.fishLost:
                 // restart game
                 // hide note display on failure
-                _noteView.Animate_NoteDisappear();
+                if (currentNoteView != null) {
+                    currentNoteView.Animate_NoteDisappear();
+                }
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
                 break;
             
@@ -217,9 +222,9 @@ public class FishingManager : MonoBehaviour
     private IEnumerator SpawnNoteOnBar() {
         noteSpawnFlag = false;
         yield return new WaitForSeconds(1f);
-        GameObject tmpNote = Instantiate(_notePrefab);
-        // Not sure how to directly incorporate the beat timing yet, I know it's explicitly 1f for now
-        StartCoroutine(tmpNote.GetComponent<NoteView>().Animate_MoveNoteAlongBar(1f));
+        currentNote = Instantiate(_notePrefab);
+        currentNoteView = currentNote.GetComponent<NoteView>();
+        StartCoroutine(currentNoteView.Animate_MoveNoteAlongBar((float)(nextBeatTime - beatTime)));
         noteSpawnFlag = true;
     }
     

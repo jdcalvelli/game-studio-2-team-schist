@@ -41,7 +41,8 @@ public class GameManager : MonoBehaviour
                 // this state exists as a pseudo-idle state
                 // for now it just pushes you straight to the next state
                 Debug.Log("in onBoat");
-                _gameStates = States.GameStates.isBaiting;
+                //_gameStates = States.GameStates.isBaiting;
+                _gameStates = States.GameStates.isFishing;
                 break;
             
             case States.GameStates.isBaiting:
