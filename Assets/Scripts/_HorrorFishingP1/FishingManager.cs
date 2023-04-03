@@ -192,6 +192,7 @@ public class FishingManager : MonoBehaviour
                 break;
             
             case fishingSubGameStates.fishCaught:
+                //check alignment of fish to determine how to proceed
                 if (fish.IsGood())
                 {
                     Debug.Log("congrats you caught a" + fish.name);
