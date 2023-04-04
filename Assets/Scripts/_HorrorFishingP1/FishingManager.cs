@@ -35,9 +35,11 @@ public class FishingManager : MonoBehaviour
     private double nextBeatTime;
     // setting the tolerance window for acceptable hits
     private double toleranceWindow = 0.5d;
-    
-    // doom variable for which fish you get
+
+    // doom variable for which fish you get, and the fish
+    [SerializeField] private FishSpawner fishSpawner;
     private int doomVar = 0;
+    private Fish fish;
 
     // for hit counting
     private int hitCounter;
@@ -122,6 +124,8 @@ public class FishingManager : MonoBehaviour
                 IncrementTimer();
                 if (inputManager.PrimaryKeyDown() && timer < timeToSetHook)
                 {
+                    // get and set the fish
+                    fish = fishSpawner.GetFish((float)doomVar/100f);
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
                     _noteView.Animate_NoteAppear();
@@ -188,7 +192,13 @@ public class FishingManager : MonoBehaviour
                 break;
             
             case fishingSubGameStates.fishCaught:
-                Debug.Log("congrats you caught the fish");
+                //check alignment of fish to determine how to proceed
+                if (fish.IsGood())
+                {
+                    Debug.Log("congrats you caught a" + fish.name);
+                }
+                else { Debug.Log("oh no you caught a" + fish.name); }
+                
                 // hide note display and show fish on success
                 _noteView.Animate_NoteDisappear();
                 _fishView.Animate_FishCaught();

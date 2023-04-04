@@ -30,6 +30,16 @@ public class Fish : MonoBehaviour
         return _a;
     }
 
+    public virtual bool IsGood()
+    {
+        if (alignment == Alignment.GOOD)
+        {
+            return true;
+
+        }
+        else return false;
+    }
+
     #endregion
 
 
