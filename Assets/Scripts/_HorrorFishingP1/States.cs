@@ -16,5 +16,41 @@ public class States
         isCleaning,
         gameEnd
     }
-    
+
+    public enum BaitingSubGameStates
+    {
+        startSubGame,
+        baitHook,
+        endSubGame,
+    }
+
+    // states related to fishing minigame
+    public enum FishingSubGameStates
+    {
+        startSubGame,
+        castingRod,
+        rhythmDown,
+        waitingForBite,
+        biteRegistered,
+        rhythmUp,
+        fishCaught,
+        fishLost,
+        showFishCaught,
+        endSubGame,
+    }
+
+    // cleaning subgame states
+    public enum CleaningSubGameStates
+    {
+        startSubGame,
+        unhookFish,
+        pickUpKnife,
+        cutHead,
+        sliceBelly,
+        pullInnards,
+        shaveScales,
+        storeInCooler,
+        endSubGame,
+    }
+
 }

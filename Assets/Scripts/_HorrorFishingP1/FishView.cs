@@ -5,15 +5,14 @@ using DG.Tweening;
 
 public class FishView : MonoBehaviour
 {
-    private SpriteRenderer fishSprite;
+    [SerializeField] private SpriteRenderer fishSprite;
 
-    void Awake() {
-        fishSprite = gameObject.GetComponent<SpriteRenderer>();
-    }
-
-    public void Animate_FishCaught() {
+    public void Animate_FishCaught(Fish fish) {
         Vector3 originalScale = transform.localScale;
 
+        // sprite from the fish
+        fishSprite.sprite = fish.sprite;
+        
         fishSprite.DOFade(255, 1f);
 
         transform.DOScale(new Vector3(2.5f, 2.5f, 0f), 0.25f).OnComplete(() => {

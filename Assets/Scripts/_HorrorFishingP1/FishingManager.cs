@@ -5,21 +5,8 @@ using UnityEngine;
 
 public class FishingManager : MonoBehaviour
 {
-    // states related to fishing minigame
-    // could be moved into another class later
-    private enum fishingSubGameStates
-    {
-        startSubGame,
-        rhythmDown,
-        waitingForBite,
-        biteRegistered,
-        rhythmUp,
-        fishCaught,
-        fishLost,
-        endSubGame,
-    }
 
-    private fishingSubGameStates _fishingSubGameState = fishingSubGameStates.startSubGame;
+    public States.FishingSubGameStates FishingSubGameState = States.FishingSubGameStates.startSubGame;
 
     // timers - expose to editor perhaps
     private float timer = 0f;
@@ -36,10 +23,19 @@ public class FishingManager : MonoBehaviour
     // setting the tolerance window for acceptable hits
     private double toleranceWindow = 0.5d;
 
-    // doom variable for which fish you get, and the fish
-    [SerializeField] private FishSpawner fishSpawner;
+    // flag to only spawn notes after each other
+    private bool noteSpawnFlag = true;
+    private NoteView currentNoteView = null;
+    private GameObject currentNote = null;
+    private GameObject nextNote = null;
+
+    //flag to run coroutine only once
+    private bool castingRodFlag = false;
+    private bool fishCaughtFlag = false;
+    
+    // doom variable for which fish you get
+    // will be incremented by 0.1 for each miss
     private int doomVar = 0;
-    private Fish fish;
 
     // for hit counting
     private int hitCounter;
@@ -48,38 +44,48 @@ public class FishingManager : MonoBehaviour
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private CanvasManager canvasManager;
+
+    // grab reference to fishspawner
+    [SerializeField] private FishSpawner fishSpawner;
+
+    [SerializeField] private GameObject _notePrefab;
 
     // Views Setup - FishingManager
-    [SerializeField] private GameObject _fishingRodObject;
-    private FishingRodView _fishingRodView;
+    [SerializeField] private GameObject _fishingViewsContainer;
 
-    [SerializeField] private GameObject _fishObject;
-    private FishView _fishView;
+    [SerializeField] private FishingRodView _fishingRodView;
+    [SerializeField] private FishView _fishView;
+    [SerializeField] private NoteView _noteView;
+    [SerializeField] private BeatBarView _beatBarView;
 
-    [SerializeField] private GameObject _noteObject;
-    private NoteView _noteView;
-
-    private void Start() {
-        _fishingRodView = _fishingRodObject.GetComponent<FishingRodView>();
-        _fishView = _fishObject.GetComponent<FishView>();
-        _noteView = _noteObject.GetComponent<NoteView>();
-    }
+    [SerializeField] GameObject beatBar;
     
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
-        switch (_fishingSubGameState)
+        switch (FishingSubGameState)
         {
-            case fishingSubGameStates.startSubGame:
+            case States.FishingSubGameStates.startSubGame:
                 // on spacebar press cast the line
                 // once again, this should be moved into an input manager
+                _fishingViewsContainer.SetActive(true);
+                canvasManager.SetText(CanvasManager.textPositions.bottomLeft, "PRESS SPACE TO CAST");
+                canvasManager.ActivateText(CanvasManager.textPositions.bottomLeft);
                 if (inputManager.PrimaryKeyDown())
                 {
+                    FishingSubGameState = States.FishingSubGameStates.castingRod;
+                }
+                break;
+            
+            case States.FishingSubGameStates.castingRod:
+                canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
+                if (castingRodFlag == false) {
                     StartCoroutine(CastRod());
                 }
                 break;
             
-            case fishingSubGameStates.rhythmDown:
+            case States.FishingSubGameStates.rhythmDown:
                 // need to drop hook on rhythm
                 // first adding the listener
                 AddOnBeatListener();
@@ -98,7 +104,7 @@ public class FishingManager : MonoBehaviour
                     // just printing doom variable for now
                     Debug.Log(doomVar);
                     // move to the next state to wait for bite
-                    _fishingSubGameState = fishingSubGameStates.waitingForBite;
+                    FishingSubGameState = States.FishingSubGameStates.waitingForBite;
                     // resetting timer
                     timer -= timeToSinkHook;
                     // removing listener
@@ -106,7 +112,7 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.waitingForBite:
+            case States.FishingSubGameStates.waitingForBite:
                 // over time increase the chances of getting a bite
                 // Debug.Log("waiting for bite");
                 if (waitingForBiteOffsetTimer <= 0f) {
@@ -117,19 +123,19 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.biteRegistered:
+            case States.FishingSubGameStates.biteRegistered:
                 // you have a certain amount of time to hook the fish
                 // this gets caught by dotween but should ultimately be refactored to only be called once later
                 waitingForBiteOffsetTimer = 1.5f;
                 IncrementTimer();
                 if (inputManager.PrimaryKeyDown() && timer < timeToSetHook)
                 {
-                    // get and set the fish
-                    fish = fishSpawner.GetFish((float)doomVar/100f);
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
-                    _noteView.Animate_NoteAppear();
-                    _fishingSubGameState = fishingSubGameStates.rhythmUp;
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
+                    //_noteView.Animate_NoteAppear();
+                    StartCoroutine(SpawnNoteOnBar());
+                    FishingSubGameState = States.FishingSubGameStates.rhythmUp;
                     // reset hook set timer
                     timer -= timeToSetHook;
                 }
@@ -137,31 +143,36 @@ public class FishingManager : MonoBehaviour
                 {
                     Debug.Log("fish lost");
                     // go to fishlost state
-                    _fishingSubGameState = fishingSubGameStates.fishLost;
+                    FishingSubGameState = States.FishingSubGameStates.fishLost;
                     // reset hook set timer
                     timer -= timeToSetHook;
                 }
                 break;
             
-            case fishingSubGameStates.rhythmUp:
+            case States.FishingSubGameStates.rhythmUp:
                 // this is ultimately where the rhythmic element will come in
                 // as such this should be where the listener gets added for the on beat event
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
+
+                if (noteSpawnFlag) {
+                    StartCoroutine(SpawnNoteOnBar());
+                }
+
                 // checking input - should be refactored later
                 if (inputManager.PrimaryKeyDown())
                 {
                     if (CheckInputOnBeat())
                     {
                         Debug.Log("hit on beat");
-                        _noteView.Animate_NoteHit();
+                        currentNoteView.Animate_NoteHit();
                         // increment a hit counter 
                         hitCounter++;
                     }
                     else
                     {
                         Debug.Log("missed the beat");
-                        _noteView.Animate_NoteMiss();
+                        currentNoteView.Animate_NoteMiss();
                         // increment a miss counter
                         missCounter++;
                     }
@@ -171,8 +182,9 @@ public class FishingManager : MonoBehaviour
                 // using arbitrary hits and misses for now
                 if (hitCounter >= 4)
                 {
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish caught state
-                    _fishingSubGameState = fishingSubGameStates.fishCaught;
+                    FishingSubGameState = States.FishingSubGameStates.fishCaught;
                     // remove the beat listener
                     RemoveOnBeatListener();
                     // reset hit counter
@@ -181,8 +193,9 @@ public class FishingManager : MonoBehaviour
                 }
                 else if (missCounter >= 4)
                 {
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish lost state
-                    _fishingSubGameState = fishingSubGameStates.fishLost;
+                    FishingSubGameState = States.FishingSubGameStates.fishLost;
                     // remove the listener
                     RemoveOnBeatListener();
                     // reset miss counter
@@ -191,33 +204,60 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.fishCaught:
-                //check alignment of fish to determine how to proceed
-                if (fish.IsGood())
-                {
-                    Debug.Log("congrats you caught a" + fish.name);
-                }
-                else { Debug.Log("oh no you caught a" + fish.name); }
-                
+            case States.FishingSubGameStates.fishCaught:
+                Debug.Log("congrats you caught the fish");
                 // hide note display and show fish on success
-                _noteView.Animate_NoteDisappear();
-                _fishView.Animate_FishCaught();
+                currentNoteView.Animate_NoteDisappear();
+
+                // reference fish spawner to return a fish and debug it
+                // we can ultimately pass this into fish caught animate to determine which fish image we use
+                Debug.Log(fishSpawner.GetFish(doomVar));
+                
                 // restart game
-                _fishingSubGameState = fishingSubGameStates.endSubGame;
+                FishingSubGameState = States.FishingSubGameStates.showFishCaught;
                 break;
-            
-            case fishingSubGameStates.fishLost:
+
+            case States.FishingSubGameStates.showFishCaught:
+                if (fishCaughtFlag == false) {
+                    StartCoroutine(ShowFishCaught(fishSpawner.GetFish(doomVar)));
+                }
+                break;
+
+            case States.FishingSubGameStates.fishLost:
                 // restart game
                 // hide note display on failure
-                _noteView.Animate_NoteDisappear();
-                _fishingSubGameState = fishingSubGameStates.startSubGame;
+                if (currentNoteView != null) {
+                    currentNoteView.Animate_NoteDisappear();
+                }
+                FishingSubGameState = States.FishingSubGameStates.startSubGame;
                 break;
             
-            case fishingSubGameStates.endSubGame:
-                // bubble up call to change state
-                gameManager.SetGameState(States.GameStates.isCleaning);
+            case States.FishingSubGameStates.endSubGame:
+
+                _fishingViewsContainer.SetActive(false);
+
+                EndSubGame();
+
                 break;
         }
+    }
+
+    private void EndSubGame() {
+        // set game manager flag
+        gameManager.hasFished = true;
+
+        // move to central global state
+        gameManager.SetGameState(States.GameStates.onBoat);
+    }
+
+    private IEnumerator SpawnNoteOnBar() {
+        noteSpawnFlag = false;
+        yield return new WaitForSeconds(1f);
+        currentNote = Instantiate(_notePrefab, beatBar.transform);
+        currentNote.transform.position = new Vector3(beatBar.transform.position.x + 400f, beatBar.transform.position.y + 450f, 0f);
+        currentNoteView = currentNote.GetComponent<NoteView>();
+        StartCoroutine(currentNoteView.Animate_MoveNoteAlongBar((float)(nextBeatTime - beatTime)));
+        noteSpawnFlag = true;
     }
     
     // when fishing, there should be a chance for a bite, then player needs to hook, then they need to reel
@@ -229,10 +269,13 @@ public class FishingManager : MonoBehaviour
         // this should also ultimately trigger anims on the fishingRodView - remember model view controller :D
         // all it does for now is switch between states
         // Play fishing rod view animation
+        castingRodFlag = true;
         _fishingRodView.Animate_CastRod();
         yield return new WaitForSeconds(_fishingRodView.rodCastTimer + _fishingRodView.lineFlyTimer);
     
-        _fishingSubGameState = fishingSubGameStates.waitingForBite;
+        FishingSubGameState = States.FishingSubGameStates.waitingForBite;
+        castingRodFlag = false;
+        canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
         Debug.Log("line cast!");
     }
 
@@ -249,7 +292,7 @@ public class FishingManager : MonoBehaviour
             {
                 _fishingRodView.Animate_FishIsBiting();
                 Debug.Log("you have a bite, now set the hook");
-                _fishingSubGameState = fishingSubGameStates.biteRegistered;
+                FishingSubGameState = States.FishingSubGameStates.biteRegistered;
             }
         }
     }
@@ -295,6 +338,18 @@ public class FishingManager : MonoBehaviour
         onBeatCallbackAdded = true;
 
     }
+
+    #region FishCaughtRelated
+
+    private IEnumerator ShowFishCaught(Fish fish) {
+        fishCaughtFlag = true;
+        _fishView.Animate_FishCaught(fish);
+        yield return new WaitForSeconds(3.5f);
+        FishingSubGameState = States.FishingSubGameStates.endSubGame;
+        fishCaughtFlag = false;
+    }
+
+    #endregion
 
     private void RemoveOnBeatListener()
     {

@@ -14,9 +14,9 @@ public class FishingRodView : MonoBehaviour
         Vector3 originalScale = transform.localScale;
 
 
-        seq.Append(transform.DOMove(new Vector3(transform.position.x + 1f, transform.position.y + 1.5f, transform.position.z), rodCastTimer));
+        seq.Append(transform.DOMove(new Vector3(transform.position.x - 1f, transform.position.y + 1.5f, transform.position.z), rodCastTimer));
         seq.Join(transform.DOScale(new Vector3(1.5f, 1.5f, 1), rodCastTimer));
-        seq.Join(transform.DORotate(new Vector3(0,0,-30), rodCastTimer).OnComplete(() => {
+        seq.Join(transform.DORotate(new Vector3(0,0, 30), rodCastTimer).OnComplete(() => {
             transform.DOMove(originalRodPosition, lineFlyTimer);
             transform.DOScale(originalScale, lineFlyTimer);
             transform.DORotate(Vector3.zero, lineFlyTimer);

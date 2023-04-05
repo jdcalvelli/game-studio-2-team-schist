@@ -26,8 +26,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5831978739913372642}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.13, y: 3.55, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 10, y: 10, z: 0}
+  m_LocalScale: {x: 3, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -97,3 +97,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11cf63d9b53cb2b4da150fbc67edc36e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  reelSource: {fileID: 5712144100110775616, guid: efe01f9825bf9714086a0b8c43132ffd, type: 3}
+  reels:
+  - {fileID: 8300000, guid: 44e1d1a24c438404b8551f3eef187a9d, type: 3}
+  - {fileID: 8300000, guid: a69104da9359a5542b4845b2f1e787a4, type: 3}
+  - {fileID: 8300000, guid: 70ad099833a715f44af8a3cb02df5d38, type: 3}
+  - {fileID: 8300000, guid: 825cd78fc1873344cbd27ba677f462c6, type: 3}
+  - {fileID: 8300000, guid: 5629c71ecb1f5e24a9547435acfad968, type: 3}
+  noteSprite: {fileID: 4865630026544721547}
+  beatBar: {fileID: 57184502707858441, guid: e9aac7ccdd841344bb76b2191c643465, type: 3}
+  beatBarSprite: {fileID: 2949476804205358070, guid: e9aac7ccdd841344bb76b2191c643465, type: 3}
