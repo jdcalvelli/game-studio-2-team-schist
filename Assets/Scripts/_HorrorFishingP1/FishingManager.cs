@@ -33,6 +33,7 @@ public class FishingManager : MonoBehaviour
     private bool castingRodFlag = false;
     
     // doom variable for which fish you get
+    // will be incremented by 0.1 for each miss
     private int doomVar = 0;
 
     // for hit counting
@@ -43,6 +44,9 @@ public class FishingManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
     [SerializeField] private CanvasManager canvasManager;
+
+    // grab reference to fishspawner
+    [SerializeField] private FishSpawner fishSpawner;
 
     [SerializeField] private GameObject _notePrefab;
 
@@ -203,7 +207,13 @@ public class FishingManager : MonoBehaviour
                 Debug.Log("congrats you caught the fish");
                 // hide note display and show fish on success
                 currentNoteView.Animate_NoteDisappear();
+                // this needs to be refactored into a coroutine
                 _fishView.Animate_FishCaught();
+                
+                // reference fish spawner to return a fish and debug it
+                // we can ultimately pass this into fish caught animate to determine which fish image we use
+                Debug.Log(fishSpawner.GetFish(doomVar));
+                
                 // restart game
                 FishingSubGameState = States.FishingSubGameStates.endSubGame;
                 break;
