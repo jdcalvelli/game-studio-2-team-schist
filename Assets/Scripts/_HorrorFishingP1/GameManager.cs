@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     // get references to ancilary managers
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private CanvasManager canvasManager;
     
     
     void Start()
@@ -41,7 +42,7 @@ public class GameManager : MonoBehaviour
                 // this state exists as a pseudo-idle state
                 // for now it just pushes you straight to the next state
                 Debug.Log("in onBoat");
-                _gameStates = States.GameStates.isBaiting;
+                _gameStates = States.GameStates.isFishing;
                 break;
             
             case States.GameStates.isBaiting:
@@ -49,6 +50,7 @@ public class GameManager : MonoBehaviour
                 // ie
                 // call baiting manager update
                 Debug.Log("in isBaiting");
+                canvasManager.SetBaitingCleaningUI();
                 baitingManager.BaitingSubGameUpdate();
                 break;
             
@@ -57,6 +59,7 @@ public class GameManager : MonoBehaviour
                 // ie
                 // call fishing manager update
                 Debug.Log("in isFishing");
+                canvasManager.SetFishingUI();
                 fishingManager.FishingSubGameUpdate();
                 break;
             
@@ -65,6 +68,7 @@ public class GameManager : MonoBehaviour
                 // ie
                 // call baiting manager update
                 Debug.Log("in isCleaning");
+                canvasManager.SetBaitingCleaningUI();
                 cleaningManager.CleaningSubGameUpdate();
                 break;
             
