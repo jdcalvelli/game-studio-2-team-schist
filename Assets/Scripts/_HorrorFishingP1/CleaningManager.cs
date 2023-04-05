@@ -4,19 +4,8 @@ using UnityEngine;
 
 public class CleaningManager : MonoBehaviour
 {
-    public enum cleaningSubGameStates {
-        startSubGame,
-        unhookFish,
-        pickUpKnife,
-        cutHead,
-        sliceBelly,
-        pullInnards,
-        shaveScales,
-        storeInCooler,
-        endSubGame,
-    }
 
-    public cleaningSubGameStates _cleaningSubGameState = cleaningSubGameStates.startSubGame;
+    public States.CleaningSubGameStates _cleaningSubGameState = States.CleaningSubGameStates.startSubGame;
 
 
     [SerializeField] private GameManager gameManager;
@@ -30,53 +19,53 @@ public class CleaningManager : MonoBehaviour
     public void CleaningSubGameUpdate() {
         switch (_cleaningSubGameState)
         {
-            case (cleaningSubGameStates.startSubGame):
+            case (States.CleaningSubGameStates.startSubGame):
                 _cleaningViewsContainer.SetActive(true);
                 canvasManager.ActivateText(CanvasManager.textPositions.bottomCenter);
                 canvasManager.SetText(CanvasManager.textPositions.bottomCenter, "PRESS SPACE TO UNHOOK");
                 // Press spacebar to unhook fish
                 if (inputManager.PrimaryKeyDown()) {
                         //Play animation of closeup of fish on hook *here*
-                        _cleaningSubGameState = cleaningSubGameStates.unhookFish;
+                        _cleaningSubGameState = States.CleaningSubGameStates.unhookFish;
                 }
                 break;
 
-            case (cleaningSubGameStates.unhookFish):
+            case (States.CleaningSubGameStates.unhookFish):
                 canvasManager.DeactivateText(CanvasManager.textPositions.bottomCenter);
                 StartCoroutine(UnhookFish());
                 break;
             
-            case (cleaningSubGameStates.pickUpKnife):
+            case (States.CleaningSubGameStates.pickUpKnife):
             // Maybe exclude this state and add the animation to the start of the subgame or the unhooking ?
                 if (inputManager.PrimaryKeyDown()) {
                     //Play animation of knife being picked up from offscreen *here*
                     Debug.Log("Knife has been picked up");
-                    _cleaningSubGameState = cleaningSubGameStates.cutHead;
+                    _cleaningSubGameState = States.CleaningSubGameStates.cutHead;
                 }
                 break;
 
-            case (cleaningSubGameStates.cutHead):
+            case (States.CleaningSubGameStates.cutHead):
                 CutHead();
                 break;
 
-            case (cleaningSubGameStates.sliceBelly):
+            case (States.CleaningSubGameStates.sliceBelly):
                 SliceBelly();
                 break;
 
-            case (cleaningSubGameStates.pullInnards):
+            case (States.CleaningSubGameStates.pullInnards):
                 PullInnards();
                 break;
 
-            case (cleaningSubGameStates.shaveScales):
+            case (States.CleaningSubGameStates.shaveScales):
                 ShaveScales();
                 break;
 
-            case (cleaningSubGameStates.storeInCooler):
+            case (States.CleaningSubGameStates.storeInCooler):
                 StoreInCooler();
                 break;
                 //end subgame
             
-            case (cleaningSubGameStates.endSubGame):
+            case (States.CleaningSubGameStates.endSubGame):
                 _cleaningViewsContainer.SetActive(false);
                 _cleaningView.ResetCleaningView();
 
@@ -98,7 +87,7 @@ public class CleaningManager : MonoBehaviour
         _cleaningView.Animate_UnhookFish();
         yield return new WaitForSeconds(2f);
         // bypass rest of states and go straight to end
-        _cleaningSubGameState = cleaningSubGameStates.endSubGame;
+        _cleaningSubGameState = States.CleaningSubGameStates.endSubGame;
     }
 
     private void CutHead() {
@@ -108,7 +97,7 @@ public class CleaningManager : MonoBehaviour
             Debug.Log("The fish has been beheaded.");
 
             //Move state change outside once head cutting is fleshed out
-            _cleaningSubGameState = cleaningSubGameStates.sliceBelly;
+            _cleaningSubGameState = States.CleaningSubGameStates.sliceBelly;
         }
     }
 
@@ -119,7 +108,7 @@ public class CleaningManager : MonoBehaviour
             Debug.Log("Its belly has been sliced open.");
 
             // Move state change outside after fleshing out
-            _cleaningSubGameState = cleaningSubGameStates.pullInnards;
+            _cleaningSubGameState = States.CleaningSubGameStates.pullInnards;
         }
     }
 
@@ -130,7 +119,7 @@ public class CleaningManager : MonoBehaviour
             Debug.Log("The fish has been gutted.");
 
             // Move state change outside after fleshing out
-            _cleaningSubGameState = cleaningSubGameStates.shaveScales;
+            _cleaningSubGameState = States.CleaningSubGameStates.shaveScales;
         }
     }
 
@@ -141,7 +130,7 @@ public class CleaningManager : MonoBehaviour
             Debug.Log("Scales have been carved off the fish.");
 
             // Move state change outside after fleshing out
-            _cleaningSubGameState = cleaningSubGameStates.storeInCooler;
+            _cleaningSubGameState = States.CleaningSubGameStates.storeInCooler;
         }
     }
 
@@ -150,7 +139,7 @@ public class CleaningManager : MonoBehaviour
         if (inputManager.PrimaryKeyDown()) {
             //Play store in cooler animation from caught fish view *here*
             Debug.Log("Fish has been stored in the cooler");
-            _cleaningSubGameState = cleaningSubGameStates.endSubGame;
+            _cleaningSubGameState = States.CleaningSubGameStates.endSubGame;
         }
     }
 }

@@ -50,21 +50,21 @@ public class GameManager : MonoBehaviour
                 if (!hasBaited && !hasFished && !hasCleaned)
                 {
                     // set subgame state here
-                    baitingManager._baitingSubGameState = BaitingManagerMVP.baitingSubGameStates.startSubGame;
+                    baitingManager.BaitingSubGameState = States.BaitingSubGameStates.startSubGame;
                     _gameStates = States.GameStates.isBaiting;
                     // set has baited to true at end of baiting subgame
                 }
                 else if (!hasFished && !hasCleaned)
                 {
                     // set subgame state here
-                    fishingManager._fishingSubGameState = FishingManager.fishingSubGameStates.startSubGame;
+                    fishingManager.FishingSubGameState = States.FishingSubGameStates.startSubGame;
                     _gameStates = States.GameStates.isFishing;
                     // set has fished to true at end of fishing subgame
                 }
                 else if (!hasCleaned)
                 {
                     // set subgame state here
-                    cleaningManager._cleaningSubGameState = CleaningManager.cleaningSubGameStates.startSubGame;
+                    cleaningManager._cleaningSubGameState = States.CleaningSubGameStates.startSubGame;
                     _gameStates = States.GameStates.isCleaning;
                     // set has cleaned to true at end of cleaning subgame
                 }

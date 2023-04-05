@@ -5,22 +5,8 @@ using UnityEngine;
 
 public class FishingManager : MonoBehaviour
 {
-    // states related to fishing minigame
-    // could be moved into another class later
-    public enum fishingSubGameStates
-    {
-        startSubGame,
-        castingRod,
-        rhythmDown,
-        waitingForBite,
-        biteRegistered,
-        rhythmUp,
-        fishCaught,
-        fishLost,
-        endSubGame,
-    }
 
-    public fishingSubGameStates _fishingSubGameState = fishingSubGameStates.startSubGame;
+    public States.FishingSubGameStates FishingSubGameState = States.FishingSubGameStates.startSubGame;
 
     // timers - expose to editor perhaps
     private float timer = 0f;
@@ -73,9 +59,9 @@ public class FishingManager : MonoBehaviour
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
-        switch (_fishingSubGameState)
+        switch (FishingSubGameState)
         {
-            case fishingSubGameStates.startSubGame:
+            case States.FishingSubGameStates.startSubGame:
                 // on spacebar press cast the line
                 // once again, this should be moved into an input manager
                 _fishingViewsContainer.SetActive(true);
@@ -83,18 +69,18 @@ public class FishingManager : MonoBehaviour
                 canvasManager.ActivateText(CanvasManager.textPositions.bottomLeft);
                 if (inputManager.PrimaryKeyDown())
                 {
-                    _fishingSubGameState = fishingSubGameStates.castingRod;
+                    FishingSubGameState = States.FishingSubGameStates.castingRod;
                 }
                 break;
             
-            case fishingSubGameStates.castingRod:
+            case States.FishingSubGameStates.castingRod:
                 canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
                 if (castingRodFlag == false) {
                     StartCoroutine(CastRod());
                 }
                 break;
             
-            case fishingSubGameStates.rhythmDown:
+            case States.FishingSubGameStates.rhythmDown:
                 // need to drop hook on rhythm
                 // first adding the listener
                 AddOnBeatListener();
@@ -113,7 +99,7 @@ public class FishingManager : MonoBehaviour
                     // just printing doom variable for now
                     Debug.Log(doomVar);
                     // move to the next state to wait for bite
-                    _fishingSubGameState = fishingSubGameStates.waitingForBite;
+                    FishingSubGameState = States.FishingSubGameStates.waitingForBite;
                     // resetting timer
                     timer -= timeToSinkHook;
                     // removing listener
@@ -121,7 +107,7 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.waitingForBite:
+            case States.FishingSubGameStates.waitingForBite:
                 // over time increase the chances of getting a bite
                 // Debug.Log("waiting for bite");
                 if (waitingForBiteOffsetTimer <= 0f) {
@@ -132,7 +118,7 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.biteRegistered:
+            case States.FishingSubGameStates.biteRegistered:
                 // you have a certain amount of time to hook the fish
                 // this gets caught by dotween but should ultimately be refactored to only be called once later
                 waitingForBiteOffsetTimer = 1.5f;
@@ -144,7 +130,7 @@ public class FishingManager : MonoBehaviour
                     _beatBarView.Animate_BeatBarAppearOrDisappear();
                     //_noteView.Animate_NoteAppear();
                     StartCoroutine(SpawnNoteOnBar());
-                    _fishingSubGameState = fishingSubGameStates.rhythmUp;
+                    FishingSubGameState = States.FishingSubGameStates.rhythmUp;
                     // reset hook set timer
                     timer -= timeToSetHook;
                 }
@@ -152,13 +138,13 @@ public class FishingManager : MonoBehaviour
                 {
                     Debug.Log("fish lost");
                     // go to fishlost state
-                    _fishingSubGameState = fishingSubGameStates.fishLost;
+                    FishingSubGameState = States.FishingSubGameStates.fishLost;
                     // reset hook set timer
                     timer -= timeToSetHook;
                 }
                 break;
             
-            case fishingSubGameStates.rhythmUp:
+            case States.FishingSubGameStates.rhythmUp:
                 // this is ultimately where the rhythmic element will come in
                 // as such this should be where the listener gets added for the on beat event
                 // then this update is irrelevant, and things get handled in the onbeatcallack
@@ -193,7 +179,7 @@ public class FishingManager : MonoBehaviour
                 {
                     _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish caught state
-                    _fishingSubGameState = fishingSubGameStates.fishCaught;
+                    FishingSubGameState = States.FishingSubGameStates.fishCaught;
                     // remove the beat listener
                     RemoveOnBeatListener();
                     // reset hit counter
@@ -204,7 +190,7 @@ public class FishingManager : MonoBehaviour
                 {
                     _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish lost state
-                    _fishingSubGameState = fishingSubGameStates.fishLost;
+                    FishingSubGameState = States.FishingSubGameStates.fishLost;
                     // remove the listener
                     RemoveOnBeatListener();
                     // reset miss counter
@@ -213,25 +199,25 @@ public class FishingManager : MonoBehaviour
                 }
                 break;
             
-            case fishingSubGameStates.fishCaught:
+            case States.FishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
                 // hide note display and show fish on success
                 currentNoteView.Animate_NoteDisappear();
                 _fishView.Animate_FishCaught();
                 // restart game
-                _fishingSubGameState = fishingSubGameStates.endSubGame;
+                FishingSubGameState = States.FishingSubGameStates.endSubGame;
                 break;
             
-            case fishingSubGameStates.fishLost:
+            case States.FishingSubGameStates.fishLost:
                 // restart game
                 // hide note display on failure
                 if (currentNoteView != null) {
                     currentNoteView.Animate_NoteDisappear();
                 }
-                _fishingSubGameState = fishingSubGameStates.startSubGame;
+                FishingSubGameState = States.FishingSubGameStates.startSubGame;
                 break;
             
-            case fishingSubGameStates.endSubGame:
+            case States.FishingSubGameStates.endSubGame:
 
                 _fishingViewsContainer.SetActive(false);
 
@@ -272,7 +258,7 @@ public class FishingManager : MonoBehaviour
         _fishingRodView.Animate_CastRod();
         yield return new WaitForSeconds(_fishingRodView.rodCastTimer + _fishingRodView.lineFlyTimer);
     
-        _fishingSubGameState = fishingSubGameStates.waitingForBite;
+        FishingSubGameState = States.FishingSubGameStates.waitingForBite;
         castingRodFlag = false;
         canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
         Debug.Log("line cast!");
@@ -291,7 +277,7 @@ public class FishingManager : MonoBehaviour
             {
                 _fishingRodView.Animate_FishIsBiting();
                 Debug.Log("you have a bite, now set the hook");
-                _fishingSubGameState = fishingSubGameStates.biteRegistered;
+                FishingSubGameState = States.FishingSubGameStates.biteRegistered;
             }
         }
     }
