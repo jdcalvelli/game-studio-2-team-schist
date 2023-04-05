@@ -4,12 +4,6 @@ using UnityEngine;
 
 public class BaitingManagerMVP : MonoBehaviour
 {
-    private enum baitingSubGameStates
-    {
-        startSubGame,
-        baitHook,
-        endSubGame,
-    }
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
@@ -19,24 +13,24 @@ public class BaitingManagerMVP : MonoBehaviour
 
     [SerializeField] private BaitingViewMVP _baitingView;
 
-    private baitingSubGameStates _baitingSubGameState = baitingSubGameStates.startSubGame;
+    public States.BaitingSubGameStates BaitingSubGameState = States.BaitingSubGameStates.startSubGame;
 
     public void BaitingSubGameUpdate() {
 
-        switch (_baitingSubGameState) {
-            case baitingSubGameStates.startSubGame:
+        switch (BaitingSubGameState) {
+            case States.BaitingSubGameStates.startSubGame:
                 _baitingViewsContainer.SetActive(true);
                 canvasManager.ActivateText(CanvasManager.textPositions.bottomCenter);
                 canvasManager.SetText(CanvasManager.textPositions.bottomCenter, "PRESS SPACE TO BAIT");
                 if (inputManager.PrimaryKeyDown()) {
-                    _baitingSubGameState = baitingSubGameStates.baitHook;
+                    BaitingSubGameState = States.BaitingSubGameStates.baitHook;
                 }
                 break;
-            case baitingSubGameStates.baitHook:
+            case States.BaitingSubGameStates.baitHook:
                 canvasManager.DeactivateText(CanvasManager.textPositions.bottomCenter);
                 StartCoroutine(BaitHook());
                 break;
-            case baitingSubGameStates.endSubGame:
+            case States.BaitingSubGameStates.endSubGame:
                 _baitingViewsContainer.SetActive(false);
                 _baitingView.ResetBaitView();
 
@@ -49,7 +43,7 @@ public class BaitingManagerMVP : MonoBehaviour
     private IEnumerator BaitHook() {
         _baitingView.Animate_BaitHook();
         yield return new WaitForSeconds(2f);
-        _baitingSubGameState = baitingSubGameStates.endSubGame;
+        BaitingSubGameState = States.BaitingSubGameStates.endSubGame;
     }
 
     private void EndSubGame() {
@@ -58,8 +52,5 @@ public class BaitingManagerMVP : MonoBehaviour
 
         // move to central global state
         gameManager.SetGameState(States.GameStates.onBoat);
-
-        // reset subgame state
-        _baitingSubGameState = baitingSubGameStates.startSubGame;
     }
 }
