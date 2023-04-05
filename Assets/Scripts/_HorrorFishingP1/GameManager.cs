@@ -15,6 +15,11 @@ public class GameManager : MonoBehaviour
     // get references to ancilary managers
     [SerializeField] private InputManager inputManager;
     [SerializeField] private CanvasManager canvasManager;
+
+    // booleans for tracking order
+    public bool hasBaited = false;
+    public bool hasFished = false;
+    public bool hasCleaned = false;
     
     
     void Start()
@@ -27,7 +32,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // debug log current state just for testing purposes
-        //Debug.Log(_gameStates);
+        // Debug.Log(_gameStates);
         
         // starting switch statement that will be checking every frame for current state of program
         // this will probably be refactored into using a lean class based state manager
@@ -39,10 +44,30 @@ public class GameManager : MonoBehaviour
                 break;
             
             case States.GameStates.onBoat:
-                // this state exists as a pseudo-idle state
-                // for now it just pushes you straight to the next state
+                // this is a centralized state that will move the states correctly, ideally
                 Debug.Log("in onBoat");
-                _gameStates = States.GameStates.isBaiting;
+
+                if (!hasBaited && !hasFished && !hasCleaned)
+                {
+                    _gameStates = States.GameStates.isBaiting;
+                    // set has baited to true at end of baiting subgame
+                }
+                else if (!hasFished && !hasCleaned)
+                {
+                    _gameStates = States.GameStates.isFishing;
+                    // set has fished to true at end of fishing subgame
+                }
+                else if (!hasCleaned)
+                {
+                    _gameStates = States.GameStates.isCleaning;
+                    // set has cleaned to true at end of cleaning subgame
+                }
+                else {
+                    // reset flags
+                    hasBaited = false;
+                    hasFished = false;
+                    hasCleaned = false;
+                }
                 break;
             
             case States.GameStates.isBaiting:

@@ -73,23 +73,34 @@ public class CleaningManager : MonoBehaviour
 
             case (cleaningSubGameStates.storeInCooler):
                 StoreInCooler();
-                _cleaningSubGameState = cleaningSubGameStates.endSubGame;
                 break;
                 //end subgame
             
             case (cleaningSubGameStates.endSubGame):
                 _cleaningViewsContainer.SetActive(false);
                 _cleaningView.ResetCleaningView();
-                // bubble up a call to change state
-                //gameManager.SetGameState(States.GameStates.onBoat);
-                gameManager.SetGameState(States.GameStates.isBaiting);
+
+                EndSubGame();
+
                 break;
         }
+    }
+
+    private void EndSubGame() {
+        // set game manager flag
+        gameManager.hasCleaned = true;
+
+        // move to central global state
+        gameManager.SetGameState(States.GameStates.onBoat);
+
+        // reset subgame state
+        _cleaningSubGameState = cleaningSubGameStates.startSubGame;
     }
 
     private IEnumerator UnhookFish() {
         _cleaningView.Animate_UnhookFish();
         yield return new WaitForSeconds(2f);
+        // bypass rest of states and go straight to end
         _cleaningSubGameState = cleaningSubGameStates.endSubGame;
     }
 
@@ -142,6 +153,7 @@ public class CleaningManager : MonoBehaviour
         if (inputManager.PrimaryKeyDown()) {
             //Play store in cooler animation from caught fish view *here*
             Debug.Log("Fish has been stored in the cooler");
+            _cleaningSubGameState = cleaningSubGameStates.endSubGame;
         }
     }
 }

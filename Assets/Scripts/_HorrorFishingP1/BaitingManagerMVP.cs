@@ -22,6 +22,7 @@ public class BaitingManagerMVP : MonoBehaviour
     private baitingSubGameStates _baitingSubGameState = baitingSubGameStates.startSubGame;
 
     public void BaitingSubGameUpdate() {
+
         switch (_baitingSubGameState) {
             case baitingSubGameStates.startSubGame:
                 _baitingViewsContainer.SetActive(true);
@@ -38,7 +39,9 @@ public class BaitingManagerMVP : MonoBehaviour
             case baitingSubGameStates.endSubGame:
                 _baitingViewsContainer.SetActive(false);
                 _baitingView.ResetBaitView();
-                gameManager.SetGameState(States.GameStates.isFishing);
+
+                EndSubGame();
+
                 break;
         }
     }
@@ -47,5 +50,16 @@ public class BaitingManagerMVP : MonoBehaviour
         _baitingView.Animate_BaitHook();
         yield return new WaitForSeconds(2f);
         _baitingSubGameState = baitingSubGameStates.endSubGame;
+    }
+
+    private void EndSubGame() {
+        // set game manager flag
+        gameManager.hasBaited = true;
+
+        // move to central global state
+        gameManager.SetGameState(States.GameStates.onBoat);
+
+        // reset subgame state
+        _baitingSubGameState = baitingSubGameStates.startSubGame;
     }
 }
