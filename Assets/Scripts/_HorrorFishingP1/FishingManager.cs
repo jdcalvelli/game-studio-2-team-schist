@@ -7,7 +7,7 @@ public class FishingManager : MonoBehaviour
 {
     // states related to fishing minigame
     // could be moved into another class later
-    private enum fishingSubGameStates
+    public enum fishingSubGameStates
     {
         startSubGame,
         castingRod,
@@ -20,7 +20,7 @@ public class FishingManager : MonoBehaviour
         endSubGame,
     }
 
-    private fishingSubGameStates _fishingSubGameState = fishingSubGameStates.startSubGame;
+    public fishingSubGameStates _fishingSubGameState = fishingSubGameStates.startSubGame;
 
     // timers - expose to editor perhaps
     private float timer = 0f;
@@ -247,9 +247,6 @@ public class FishingManager : MonoBehaviour
 
         // move to central global state
         gameManager.SetGameState(States.GameStates.onBoat);
-
-        // reset subgame state
-        _fishingSubGameState = fishingSubGameStates.startSubGame;
     }
 
     private IEnumerator SpawnNoteOnBar() {

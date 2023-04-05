@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BaitingManagerMVP : MonoBehaviour
 {
-    private enum baitingSubGameStates
+    public enum baitingSubGameStates
     {
         startSubGame,
         baitHook,
@@ -19,7 +19,7 @@ public class BaitingManagerMVP : MonoBehaviour
 
     [SerializeField] private BaitingViewMVP _baitingView;
 
-    private baitingSubGameStates _baitingSubGameState = baitingSubGameStates.startSubGame;
+    public baitingSubGameStates _baitingSubGameState = baitingSubGameStates.startSubGame;
 
     public void BaitingSubGameUpdate() {
 
@@ -58,8 +58,5 @@ public class BaitingManagerMVP : MonoBehaviour
 
         // move to central global state
         gameManager.SetGameState(States.GameStates.onBoat);
-
-        // reset subgame state
-        _baitingSubGameState = baitingSubGameStates.startSubGame;
     }
 }

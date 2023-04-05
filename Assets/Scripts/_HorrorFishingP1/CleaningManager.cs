@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CleaningManager : MonoBehaviour
 {
-    private enum cleaningSubGameStates {
+    public enum cleaningSubGameStates {
         startSubGame,
         unhookFish,
         pickUpKnife,
@@ -16,7 +16,7 @@ public class CleaningManager : MonoBehaviour
         endSubGame,
     }
 
-    private cleaningSubGameStates _cleaningSubGameState = cleaningSubGameStates.startSubGame;
+    public cleaningSubGameStates _cleaningSubGameState = cleaningSubGameStates.startSubGame;
 
 
     [SerializeField] private GameManager gameManager;
@@ -92,9 +92,6 @@ public class CleaningManager : MonoBehaviour
 
         // move to central global state
         gameManager.SetGameState(States.GameStates.onBoat);
-
-        // reset subgame state
-        _cleaningSubGameState = cleaningSubGameStates.startSubGame;
     }
 
     private IEnumerator UnhookFish() {
