@@ -5,11 +5,7 @@ using DG.Tweening;
 
 public class FishView : MonoBehaviour
 {
-    private SpriteRenderer fishSprite;
-
-    void Awake() {
-        fishSprite = gameObject.GetComponent<SpriteRenderer>();
-    }
+    [SerializeField] private SpriteRenderer fishSprite;
 
     public void Animate_FishCaught() {
         Vector3 originalScale = transform.localScale;

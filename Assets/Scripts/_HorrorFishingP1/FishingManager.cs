@@ -10,6 +10,7 @@ public class FishingManager : MonoBehaviour
     private enum fishingSubGameStates
     {
         startSubGame,
+        castingRod,
         rhythmDown,
         waitingForBite,
         biteRegistered,
@@ -41,6 +42,9 @@ public class FishingManager : MonoBehaviour
     private NoteView currentNoteView = null;
     private GameObject currentNote = null;
     private GameObject nextNote = null;
+
+    //flag to run coroutine only once
+    private bool castingRodFlag = false;
     
     // doom variable for which fish you get
     private int doomVar = 0;
@@ -52,14 +56,19 @@ public class FishingManager : MonoBehaviour
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private CanvasManager canvasManager;
 
     [SerializeField] private GameObject _notePrefab;
 
     // Views Setup - FishingManager
+    [SerializeField] private GameObject _fishingViewsContainer;
+
     [SerializeField] private FishingRodView _fishingRodView;
     [SerializeField] private FishView _fishView;
     [SerializeField] private NoteView _noteView;
     [SerializeField] private BeatBarView _beatBarView;
+
+    [SerializeField] GameObject beatBar;
     
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
@@ -69,8 +78,18 @@ public class FishingManager : MonoBehaviour
             case fishingSubGameStates.startSubGame:
                 // on spacebar press cast the line
                 // once again, this should be moved into an input manager
+                _fishingViewsContainer.SetActive(true);
+                canvasManager.SetText(CanvasManager.textPositions.bottomLeft, "PRESS SPACE TO CAST");
+                canvasManager.ActivateText(CanvasManager.textPositions.bottomLeft);
                 if (inputManager.PrimaryKeyDown())
                 {
+                    _fishingSubGameState = fishingSubGameStates.castingRod;
+                }
+                break;
+            
+            case fishingSubGameStates.castingRod:
+                canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
+                if (castingRodFlag == false) {
                     StartCoroutine(CastRod());
                 }
                 break;
@@ -214,6 +233,7 @@ public class FishingManager : MonoBehaviour
             
             case fishingSubGameStates.endSubGame:
                 // bubble up call to change state
+                _fishingViewsContainer.SetActive(false);
                 gameManager.SetGameState(States.GameStates.isCleaning);
                 break;
         }
@@ -222,7 +242,8 @@ public class FishingManager : MonoBehaviour
     private IEnumerator SpawnNoteOnBar() {
         noteSpawnFlag = false;
         yield return new WaitForSeconds(1f);
-        currentNote = Instantiate(_notePrefab);
+        currentNote = Instantiate(_notePrefab, beatBar.transform);
+        currentNote.transform.position = new Vector3(beatBar.transform.position.x + 400f, beatBar.transform.position.y + 450f, 0f);
         currentNoteView = currentNote.GetComponent<NoteView>();
         StartCoroutine(currentNoteView.Animate_MoveNoteAlongBar((float)(nextBeatTime - beatTime)));
         noteSpawnFlag = true;
@@ -237,10 +258,13 @@ public class FishingManager : MonoBehaviour
         // this should also ultimately trigger anims on the fishingRodView - remember model view controller :D
         // all it does for now is switch between states
         // Play fishing rod view animation
+        castingRodFlag = true;
         _fishingRodView.Animate_CastRod();
         yield return new WaitForSeconds(_fishingRodView.rodCastTimer + _fishingRodView.lineFlyTimer);
     
         _fishingSubGameState = fishingSubGameStates.waitingForBite;
+        castingRodFlag = false;
+        canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
         Debug.Log("line cast!");
     }
 

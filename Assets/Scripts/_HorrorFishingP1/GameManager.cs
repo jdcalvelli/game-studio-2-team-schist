@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     private States.GameStates _gameStates;
     
     // get references to subgame managers
-    [SerializeField] private BaitingManager baitingManager;
+    [SerializeField] private BaitingManagerMVP baitingManager;
     [SerializeField] private FishingManager fishingManager;
     [SerializeField] private CleaningManager cleaningManager;
 
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
                 // this state exists as a pseudo-idle state
                 // for now it just pushes you straight to the next state
                 Debug.Log("in onBoat");
-                _gameStates = States.GameStates.isFishing;
+                _gameStates = States.GameStates.isBaiting;
                 break;
             
             case States.GameStates.isBaiting:

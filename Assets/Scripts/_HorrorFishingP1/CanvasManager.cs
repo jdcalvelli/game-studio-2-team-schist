@@ -39,6 +39,7 @@ public class CanvasManager : MonoBehaviour
 
     public void DeactivateText(textPositions textPosition) {
         GrabReferencedText(textPosition).gameObject.SetActive(false);
+        GrabReferencedText(textPosition).SetText("");
     }
 
     private TextMeshProUGUI GrabReferencedText(textPositions textPosition) {

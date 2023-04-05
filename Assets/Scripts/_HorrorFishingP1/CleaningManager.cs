@@ -18,23 +18,32 @@ public class CleaningManager : MonoBehaviour
 
     private cleaningSubGameStates _cleaningSubGameState = cleaningSubGameStates.startSubGame;
 
+
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
+    [SerializeField] private CanvasManager canvasManager;
+
+    [SerializeField] private GameObject _cleaningViewsContainer;
+
+    [SerializeField] private CleaningViewMVP _cleaningView;
 
     public void CleaningSubGameUpdate() {
         switch (_cleaningSubGameState)
         {
             case (cleaningSubGameStates.startSubGame):
+                _cleaningViewsContainer.SetActive(true);
+                canvasManager.ActivateText(CanvasManager.textPositions.bottomCenter);
+                canvasManager.SetText(CanvasManager.textPositions.bottomCenter, "PRESS SPACE TO UNHOOK");
                 // Press spacebar to unhook fish
                 if (inputManager.PrimaryKeyDown()) {
                         //Play animation of closeup of fish on hook *here*
-                        Debug.Log("The fish stares back with a hook through its mouth");
                         _cleaningSubGameState = cleaningSubGameStates.unhookFish;
                 }
                 break;
 
             case (cleaningSubGameStates.unhookFish):
-                UnhookFish();
+                canvasManager.DeactivateText(CanvasManager.textPositions.bottomCenter);
+                StartCoroutine(UnhookFish());
                 break;
             
             case (cleaningSubGameStates.pickUpKnife):
@@ -69,22 +78,19 @@ public class CleaningManager : MonoBehaviour
                 //end subgame
             
             case (cleaningSubGameStates.endSubGame):
+                _cleaningViewsContainer.SetActive(false);
+                _cleaningView.ResetCleaningView();
                 // bubble up a call to change state
-                gameManager.SetGameState(States.GameStates.onBoat);
+                //gameManager.SetGameState(States.GameStates.onBoat);
+                gameManager.SetGameState(States.GameStates.isBaiting);
                 break;
         }
     }
 
-    private void UnhookFish() {
-        // Add fish unhooking logic, full subgame or just button press?
-        // Probably change later, but spacebar for now
-        if (inputManager.PrimaryKeyDown()) {
-            //Play unhooking animation from hook view *here*
-            Debug.Log("Hook removed from fish");
-
-            //Move state change outside once unhooking is fleshed out
-            _cleaningSubGameState = cleaningSubGameStates.pickUpKnife;
-        }
+    private IEnumerator UnhookFish() {
+        _cleaningView.Animate_UnhookFish();
+        yield return new WaitForSeconds(2f);
+        _cleaningSubGameState = cleaningSubGameStates.endSubGame;
     }
 
     private void CutHead() {
