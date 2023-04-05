@@ -1,23 +1,30 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FishSpawner : MonoBehaviour
 {
 
-    public Fish[] allFish;
-    private Fish[] goodFish;
-    private Fish[] badFish;
+    // arrays have an unalterable length - determined at compile time, jd switched these to lists so that it works as intended.
+    public List<Fish> allFish;
+    public List<Fish> goodFish;
+    public List<Fish> badFish;
 
     public Fish GetFish(float _doom)
     {
+        
+        InitializeFish();
+        
+        // we have to standardize how doom variable will work - i really think we have to remove the rhythm on the way down - jd
         if (Random.Range(0f,1f) < _doom)
         {
-            return badFish[Random.Range(0,badFish.Length)];
+            return goodFish[Random.Range(0, goodFish.Count)];
         }
         else
         {
-            return goodFish[Random.Range(0, goodFish.Length)];
+            return badFish[Random.Range(0,badFish.Count)];
         }
     }
 
@@ -26,15 +33,19 @@ public class FishSpawner : MonoBehaviour
 
     public void InitializeFish()
     {
-        foreach(Fish fish in allFish)
+        // in the event that the sorting hasnt already happened, do the sort
+        if (goodFish.Count == 0 && badFish.Count == 0)
         {
-            if (fish.GetAlignment() == Fish.Alignment.GOOD)
+            foreach(Fish fish in allFish)
             {
-                goodFish[goodFish.Length-1] = fish;
-            }
-            else
-            {
-                badFish[badFish.Length - 1] = fish;
+                if (fish.GetAlignment() == Fish.Alignment.GOOD)
+                {
+                    goodFish.Add(fish);
+                }
+                else
+                {
+                    badFish.Add(fish);
+                }
             }
         }
     }
