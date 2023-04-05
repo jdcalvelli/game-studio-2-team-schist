@@ -232,11 +232,24 @@ public class FishingManager : MonoBehaviour
                 break;
             
             case fishingSubGameStates.endSubGame:
-                // bubble up call to change state
+
                 _fishingViewsContainer.SetActive(false);
-                gameManager.SetGameState(States.GameStates.isCleaning);
+
+                EndSubGame();
+
                 break;
         }
+    }
+
+    private void EndSubGame() {
+        // set game manager flag
+        gameManager.hasFished = true;
+
+        // move to central global state
+        gameManager.SetGameState(States.GameStates.onBoat);
+
+        // reset subgame state
+        _fishingSubGameState = fishingSubGameStates.startSubGame;
     }
 
     private IEnumerator SpawnNoteOnBar() {
