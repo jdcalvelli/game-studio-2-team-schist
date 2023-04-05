@@ -36,10 +36,14 @@ public class FishingManager : MonoBehaviour
     // setting the tolerance window for acceptable hits
     private double toleranceWindow = 0.5d;
 
-    // doom variable for which fish you get, and the fish
-    [SerializeField] private FishSpawner fishSpawner;
+    // flag to only spawn notes after each other
+    private bool noteSpawnFlag = true;
+    private NoteView currentNoteView = null;
+    private GameObject currentNote = null;
+    private GameObject nextNote = null;
+    
+    // doom variable for which fish you get
     private int doomVar = 0;
-    private Fish fish;
 
     // for hit counting
     private int hitCounter;
@@ -49,21 +53,13 @@ public class FishingManager : MonoBehaviour
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
 
+    [SerializeField] private GameObject _notePrefab;
+
     // Views Setup - FishingManager
-    [SerializeField] private GameObject _fishingRodObject;
-    private FishingRodView _fishingRodView;
-
-    [SerializeField] private GameObject _fishObject;
-    private FishView _fishView;
-
-    [SerializeField] private GameObject _noteObject;
-    private NoteView _noteView;
-
-    private void Start() {
-        _fishingRodView = _fishingRodObject.GetComponent<FishingRodView>();
-        _fishView = _fishObject.GetComponent<FishView>();
-        _noteView = _noteObject.GetComponent<NoteView>();
-    }
+    [SerializeField] private FishingRodView _fishingRodView;
+    [SerializeField] private FishView _fishView;
+    [SerializeField] private NoteView _noteView;
+    [SerializeField] private BeatBarView _beatBarView;
     
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
@@ -124,11 +120,11 @@ public class FishingManager : MonoBehaviour
                 IncrementTimer();
                 if (inputManager.PrimaryKeyDown() && timer < timeToSetHook)
                 {
-                    // get and set the fish
-                    fish = fishSpawner.GetFish((float)doomVar/100f);
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
-                    _noteView.Animate_NoteAppear();
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
+                    //_noteView.Animate_NoteAppear();
+                    StartCoroutine(SpawnNoteOnBar());
                     _fishingSubGameState = fishingSubGameStates.rhythmUp;
                     // reset hook set timer
                     timer -= timeToSetHook;
@@ -148,20 +144,25 @@ public class FishingManager : MonoBehaviour
                 // as such this should be where the listener gets added for the on beat event
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
+
+                if (noteSpawnFlag) {
+                    StartCoroutine(SpawnNoteOnBar());
+                }
+
                 // checking input - should be refactored later
                 if (inputManager.PrimaryKeyDown())
                 {
                     if (CheckInputOnBeat())
                     {
                         Debug.Log("hit on beat");
-                        _noteView.Animate_NoteHit();
+                        currentNoteView.Animate_NoteHit();
                         // increment a hit counter 
                         hitCounter++;
                     }
                     else
                     {
                         Debug.Log("missed the beat");
-                        _noteView.Animate_NoteMiss();
+                        currentNoteView.Animate_NoteMiss();
                         // increment a miss counter
                         missCounter++;
                     }
@@ -171,6 +172,7 @@ public class FishingManager : MonoBehaviour
                 // using arbitrary hits and misses for now
                 if (hitCounter >= 4)
                 {
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish caught state
                     _fishingSubGameState = fishingSubGameStates.fishCaught;
                     // remove the beat listener
@@ -181,6 +183,7 @@ public class FishingManager : MonoBehaviour
                 }
                 else if (missCounter >= 4)
                 {
+                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish lost state
                     _fishingSubGameState = fishingSubGameStates.fishLost;
                     // remove the listener
@@ -192,15 +195,9 @@ public class FishingManager : MonoBehaviour
                 break;
             
             case fishingSubGameStates.fishCaught:
-                //check alignment of fish to determine how to proceed
-                if (fish.IsGood())
-                {
-                    Debug.Log("congrats you caught a" + fish.name);
-                }
-                else { Debug.Log("oh no you caught a" + fish.name); }
-                
+                Debug.Log("congrats you caught the fish");
                 // hide note display and show fish on success
-                _noteView.Animate_NoteDisappear();
+                currentNoteView.Animate_NoteDisappear();
                 _fishView.Animate_FishCaught();
                 // restart game
                 _fishingSubGameState = fishingSubGameStates.endSubGame;
@@ -209,7 +206,9 @@ public class FishingManager : MonoBehaviour
             case fishingSubGameStates.fishLost:
                 // restart game
                 // hide note display on failure
-                _noteView.Animate_NoteDisappear();
+                if (currentNoteView != null) {
+                    currentNoteView.Animate_NoteDisappear();
+                }
                 _fishingSubGameState = fishingSubGameStates.startSubGame;
                 break;
             
@@ -218,6 +217,15 @@ public class FishingManager : MonoBehaviour
                 gameManager.SetGameState(States.GameStates.isCleaning);
                 break;
         }
+    }
+
+    private IEnumerator SpawnNoteOnBar() {
+        noteSpawnFlag = false;
+        yield return new WaitForSeconds(1f);
+        currentNote = Instantiate(_notePrefab);
+        currentNoteView = currentNote.GetComponent<NoteView>();
+        StartCoroutine(currentNoteView.Animate_MoveNoteAlongBar((float)(nextBeatTime - beatTime)));
+        noteSpawnFlag = true;
     }
     
     // when fishing, there should be a chance for a bite, then player needs to hook, then they need to reel

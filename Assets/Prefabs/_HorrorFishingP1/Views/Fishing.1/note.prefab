@@ -97,3 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11cf63d9b53cb2b4da150fbc67edc36e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  noteSprite: {fileID: 4865630026544721547}
+  beatBar: {fileID: 57184502707858441, guid: e9aac7ccdd841344bb76b2191c643465, type: 3}
+  beatBarSprite: {fileID: 2949476804205358070, guid: e9aac7ccdd841344bb76b2191c643465, type: 3}
