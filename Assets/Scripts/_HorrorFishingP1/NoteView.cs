@@ -5,6 +5,9 @@ using DG.Tweening;
 
 public class NoteView : MonoBehaviour
 {
+    [SerializeField] private AudioSource reelSource;
+    [SerializeField] private AudioClip[] reels;
+
     [SerializeField] private SpriteRenderer noteSprite;
 
     [SerializeField] private GameObject beatBar;
@@ -28,6 +31,7 @@ public class NoteView : MonoBehaviour
         //Vector3 originalScale = transform.localScale;
 
         transform.DOScale(new Vector3(6f, 6f, 1f), 0.25f);
+        reelSource.PlayOneShot(reels[Random.Range(0, reels.Length)]);
         Animate_NoteDisappear();
     }
 
