@@ -35,6 +35,7 @@ public class States
         rhythmUp,
         fishCaught,
         fishLost,
+        showFishCaught,
         endSubGame,
     }
 

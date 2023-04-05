@@ -44,8 +44,8 @@ public class NoteView : MonoBehaviour
         noteSprite.DOColor(Color.grey, 0.25f).OnComplete(() => {
             noteSprite.DOColor(originalColor, 0.25f);
             transform.DOScale(originalScale, 0.25f);
-            Animate_NoteDisappear();
         });
+        Animate_NoteDisappear();
     }
 
     public IEnumerator Animate_MoveNoteAlongBar(float timeBetweenBeats) {

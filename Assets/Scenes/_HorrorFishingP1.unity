@@ -530,6 +530,17 @@ SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 3153909861499826622, guid: 9662ea91bbee8c146ac490584a430d15, type: 3}
   m_PrefabInstance: {fileID: 442367601}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &736334627 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8281279172542780022, guid: 9662ea91bbee8c146ac490584a430d15, type: 3}
+  m_PrefabInstance: {fileID: 442367601}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736334624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42c2228e88035af45b85693f540ef04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &775925287
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1335,6 +1346,7 @@ MonoBehaviour:
   canvasManager: {fileID: 1978181716}
   _baitingViewsContainer: {fileID: 824577196}
   _baitingView: {fileID: 1452474539}
+  BaitingSubGameState: 0
 --- !u!1001 &1921202785
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1409,6 +1421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 709cc1fec5855024bb86ee391993e3ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cleaningSubGameState: 0
   gameManager: {fileID: 1171185921}
   inputManager: {fileID: 23010455}
   canvasManager: {fileID: 1978181716}
@@ -2367,7 +2380,7 @@ PrefabInstance:
     - target: {fileID: 8230360018134886568, guid: 751cd22fa1e224bb6a1c7760ebd218ce, type: 3}
       propertyPath: _fishView
       value: 
-      objectReference: {fileID: 8281279172542780022, guid: 9662ea91bbee8c146ac490584a430d15, type: 3}
+      objectReference: {fileID: 736334627}
     - target: {fileID: 8230360018134886568, guid: 751cd22fa1e224bb6a1c7760ebd218ce, type: 3}
       propertyPath: _noteView
       value: 

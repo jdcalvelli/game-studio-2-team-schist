@@ -31,6 +31,7 @@ public class FishingManager : MonoBehaviour
 
     //flag to run coroutine only once
     private bool castingRodFlag = false;
+    private bool fishCaughtFlag = false;
     
     // doom variable for which fish you get
     // will be incremented by 0.1 for each miss
@@ -215,9 +216,15 @@ public class FishingManager : MonoBehaviour
                 Debug.Log(fishSpawner.GetFish(doomVar));
                 
                 // restart game
-                FishingSubGameState = States.FishingSubGameStates.endSubGame;
+                FishingSubGameState = States.FishingSubGameStates.showFishCaught;
                 break;
-            
+
+            case States.FishingSubGameStates.showFishCaught:
+                if (fishCaughtFlag == false) {
+                    StartCoroutine(ShowFishCaught());
+                }
+                break;
+
             case States.FishingSubGameStates.fishLost:
                 // restart game
                 // hide note display on failure
@@ -333,6 +340,18 @@ public class FishingManager : MonoBehaviour
         onBeatCallbackAdded = true;
 
     }
+
+    #region FishCaughtRelated
+
+    private IEnumerator ShowFishCaught() {
+        fishCaughtFlag = true;
+        _fishView.Animate_FishCaught();
+        yield return new WaitForSeconds(3.5f);
+        FishingSubGameState = States.FishingSubGameStates.endSubGame;
+        fishCaughtFlag = false;
+    }
+
+    #endregion
 
     private void RemoveOnBeatListener()
     {
