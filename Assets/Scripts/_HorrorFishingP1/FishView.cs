@@ -7,9 +7,12 @@ public class FishView : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer fishSprite;
 
-    public void Animate_FishCaught() {
+    public void Animate_FishCaught(Fish fish) {
         Vector3 originalScale = transform.localScale;
 
+        // sprite from the fish
+        fishSprite.sprite = fish.sprite;
+        
         fishSprite.DOFade(255, 1f);
 
         transform.DOScale(new Vector3(2.5f, 2.5f, 0f), 0.25f).OnComplete(() => {
