@@ -53,7 +53,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4973743622642569911, guid: 13c9d8685f913534bb1d04533ed24458, type: 3}
       propertyPath: m_Name
-      value: Fish
+      value: Angler
       objectReference: {fileID: 0}
+    - target: {fileID: 5236538602258473150, guid: 13c9d8685f913534bb1d04533ed24458, type: 3}
+      propertyPath: sprite
+      value: 
+      objectReference: {fileID: 16164116, guid: 30f7c7a87ad1e4dc79ba458f110a8f8e, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 13c9d8685f913534bb1d04533ed24458, type: 3}

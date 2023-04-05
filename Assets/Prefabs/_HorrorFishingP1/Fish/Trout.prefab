@@ -60,6 +60,10 @@ PrefabInstance:
       value: Trout
       objectReference: {fileID: 0}
     - target: {fileID: 5236538602258473150, guid: 13c9d8685f913534bb1d04533ed24458, type: 3}
+      propertyPath: sprite
+      value: 
+      objectReference: {fileID: 113167604, guid: 227522d19aad64d099857e0e4ba46940, type: 3}
+    - target: {fileID: 5236538602258473150, guid: 13c9d8685f913534bb1d04533ed24458, type: 3}
       propertyPath: alignment
       value: 1
       objectReference: {fileID: 0}

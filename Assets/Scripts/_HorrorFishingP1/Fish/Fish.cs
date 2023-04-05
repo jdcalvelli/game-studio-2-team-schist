@@ -9,7 +9,8 @@ public class Fish : MonoBehaviour
 
     #region declarations
 
-    [SerializeField] protected Sprite sprite;
+    // used for setting the correct FishView
+    public Sprite sprite;
     public enum Alignment
     {
         BAD,

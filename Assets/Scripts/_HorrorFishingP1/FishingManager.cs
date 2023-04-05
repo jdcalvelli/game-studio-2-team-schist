@@ -208,9 +208,7 @@ public class FishingManager : MonoBehaviour
                 Debug.Log("congrats you caught the fish");
                 // hide note display and show fish on success
                 currentNoteView.Animate_NoteDisappear();
-                // this needs to be refactored into a coroutine
-                _fishView.Animate_FishCaught();
-                
+
                 // reference fish spawner to return a fish and debug it
                 // we can ultimately pass this into fish caught animate to determine which fish image we use
                 Debug.Log(fishSpawner.GetFish(doomVar));
@@ -221,7 +219,7 @@ public class FishingManager : MonoBehaviour
 
             case States.FishingSubGameStates.showFishCaught:
                 if (fishCaughtFlag == false) {
-                    StartCoroutine(ShowFishCaught());
+                    StartCoroutine(ShowFishCaught(fishSpawner.GetFish(doomVar)));
                 }
                 break;
 
@@ -343,9 +341,9 @@ public class FishingManager : MonoBehaviour
 
     #region FishCaughtRelated
 
-    private IEnumerator ShowFishCaught() {
+    private IEnumerator ShowFishCaught(Fish fish) {
         fishCaughtFlag = true;
-        _fishView.Animate_FishCaught();
+        _fishView.Animate_FishCaught(fish);
         yield return new WaitForSeconds(3.5f);
         FishingSubGameState = States.FishingSubGameStates.endSubGame;
         fishCaughtFlag = false;
