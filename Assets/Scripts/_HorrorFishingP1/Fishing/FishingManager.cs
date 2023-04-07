@@ -14,8 +14,6 @@ public class FishingManager : MonoBehaviour
     private float timeToSinkHook = 5f;
     private float waitingForBiteOffsetTimer = 1.5f;
     
-    // for adding onBeatCallback listener during correct state
-    private bool onBeatCallbackAdded = false;
     // for checking if a player input is inside of beat time
     private double beatTime;
     // this will ultimately be relevant for tweening things
@@ -30,7 +28,7 @@ public class FishingManager : MonoBehaviour
     private bool fishCaughtFlag = false;
     
     // doom variable for which fish you get
-    // will be incremented by 0.1 for each miss
+    // will be incremented by 1 for each miss
     private int doomVar = 0;
 
     // for hit counting
@@ -50,6 +48,13 @@ public class FishingManager : MonoBehaviour
 
     [SerializeField] private FishingRodView _fishingRodView;
     [SerializeField] private FishView _fishView;
+
+    private void Start()
+    {
+        // subscribing to on beat events, we will check for the correct state inside of the onbeatcallback
+        Beat.Clock.Instance.Beat += OnBeatCallback;
+        Debug.Log(" FISHING MANAGER: ON BEAT listener added");
+    }
 
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
@@ -77,16 +82,17 @@ public class FishingManager : MonoBehaviour
             
             case States.FishingSubGameStates.rhythmDown:
                 // need to drop hook on rhythm
-                // first adding the listener
-                AddOnBeatListener();
                 IncrementTimer();
                 if (inputManager.PrimaryKeyDown() && timer < timeToSinkHook)
                 {
-                    // check if input is NOT beat
-                    if (!CheckInputOnBeat())
+                    // check if input is on beat
+                    // if so decrement doom variable
+                    // doom variable by default will go up every beat
+                    // see in beat callback below
+                    if (CheckInputOnBeat())
                     {
                         // increment doom variable
-                        doomVar++;
+                        doomVar--;
                     }
                 }
                 else if (timer > timeToSinkHook)
@@ -97,8 +103,6 @@ public class FishingManager : MonoBehaviour
                     FishingSubGameState = States.FishingSubGameStates.waitingForBite;
                     // resetting timer
                     timer -= timeToSinkHook;
-                    // removing listener
-                    RemoveOnBeatListener();
                 }
                 break;
             
@@ -138,9 +142,6 @@ public class FishingManager : MonoBehaviour
             
             case States.FishingSubGameStates.rhythmUp:
                 // this is ultimately where the rhythmic element will come in
-                // as such this should be where the listener gets added for the on beat event
-                // then this update is irrelevant, and things get handled in the onbeatcallack
-                AddOnBeatListener();
 
                 // checking input - should be refactored later
                 if (inputManager.PrimaryKeyDown())
@@ -165,8 +166,6 @@ public class FishingManager : MonoBehaviour
                 {
                     // switch to fish caught state
                     FishingSubGameState = States.FishingSubGameStates.fishCaught;
-                    // remove the beat listener
-                    RemoveOnBeatListener();
                     // reset hit counter
                     hitCounter = 0;
                     missCounter = 0;
@@ -175,8 +174,6 @@ public class FishingManager : MonoBehaviour
                 {
                     // switch to fish lost state
                     FishingSubGameState = States.FishingSubGameStates.fishLost;
-                    // remove the listener
-                    RemoveOnBeatListener();
                     // reset miss counter
                     hitCounter = 0;
                     missCounter = 0;
@@ -195,12 +192,17 @@ public class FishingManager : MonoBehaviour
                 break;
 
             case States.FishingSubGameStates.showFishCaught:
+                // reset the doom Var
+                doomVar = 0;
+                
                 if (fishCaughtFlag == false) {
                     StartCoroutine(ShowFishCaught(fishSpawner.GetFish(doomVar)));
                 }
                 break;
 
             case States.FishingSubGameStates.fishLost:
+                // reset the doomVar
+                doomVar = 0;
                 // restart game
                 FishingSubGameState = States.FishingSubGameStates.startSubGame;
                 break;
@@ -236,7 +238,8 @@ public class FishingManager : MonoBehaviour
         _fishingRodView.Animate_CastRod();
         yield return new WaitForSeconds(_fishingRodView.rodCastTimer + _fishingRodView.lineFlyTimer);
     
-        FishingSubGameState = States.FishingSubGameStates.waitingForBite;
+        // we want to move to rhythm down now
+        FishingSubGameState = States.FishingSubGameStates.rhythmDown;
         castingRodFlag = false;
         canvasManager.DeactivateText(CanvasManager.textPositions.bottomLeft);
         Debug.Log("line cast!");
@@ -276,32 +279,6 @@ public class FishingManager : MonoBehaviour
     
     #endregion
 
-    #region TimerHelper
-    
-    private void IncrementTimer()
-    {
-        // increment passed in timer based on time delta time
-        timer += Time.deltaTime;
-    }
-
-    #endregion
-
-    #region RhythmRelated
-    
-    // these two can be refactored into one function later - like UpdateOnBeatListener or something
-    private void AddOnBeatListener()
-    {
-        if (!onBeatCallbackAdded)
-        {
-            // this grabs the instance of clock script and calls OnBeatCallback on reception of event
-            Beat.Clock.Instance.Beat += OnBeatCallback;
-            Debug.Log("listener added");
-        }
-
-        onBeatCallbackAdded = true;
-
-    }
-
     #region FishCaughtRelated
 
     private IEnumerator ShowFishCaught(Fish fish) {
@@ -313,19 +290,19 @@ public class FishingManager : MonoBehaviour
     }
 
     #endregion
-
-    private void RemoveOnBeatListener()
-    {
-        if (onBeatCallbackAdded)
-        {
-            // this grabs the instance of clock script and remvoves the call to OnBeatCallback on reception of event
-            Beat.Clock.Instance.Beat -= OnBeatCallback;
-            Debug.Log("listener removed");
-        }
-
-        onBeatCallbackAdded = false;
-    }
     
+    #region TimerHelper
+    
+    private void IncrementTimer()
+    {
+        // increment passed in timer based on time delta time
+        timer += Time.deltaTime;
+    }
+
+    #endregion
+    
+    #region RhythmRelated
+
     // event is only added when we're in the correct state, at which point we should execute
     // the following logic on each beat
     // we can't make calls to input here bc its on a separate thread it seems
@@ -339,15 +316,31 @@ public class FishingManager : MonoBehaviour
         
         // logs just for testing
         // Debug.Log("-------");
-        Debug.Log(beatArgs.BeatVal);
+        // Debug.Log(beatArgs.BeatVal);
         // Debug.Log(beatArgs.BeatTime);
         // Debug.Log(beatArgs.NextBeatTime);
         // Debug.Log("-------");
-        
-        // call the rod rotate function
-        _fishingRodView.Animate_RodSpin(beatDuration);
-        // call the color shift
-        _fishingRodView.Animate_ShiftBeatColor(beatDuration);
+
+        // state checker inside of onbeatcallback to cut out like 50 lines of redundant code
+        switch (FishingSubGameState)
+        {
+            case States.FishingSubGameStates.rhythmDown:
+                // call the rod rotate function backwards to simulate going down
+                _fishingRodView.Animate_RodSpin(-360, beatDuration);
+                // call the color shift
+                _fishingRodView.Animate_ShiftBeatColor(beatDuration);
+                
+                // increment doom variable by default
+                doomVar++;
+                Debug.Log(doomVar);
+                break;
+            case States.FishingSubGameStates.rhythmUp:
+                // call the rod rotate function going forward
+                _fishingRodView.Animate_RodSpin(360, beatDuration);
+                // call the color shift
+                _fishingRodView.Animate_ShiftBeatColor(beatDuration);
+                break;
+        }
     }
     
     // because we cant check for input on alternate threads, what we're going to do is

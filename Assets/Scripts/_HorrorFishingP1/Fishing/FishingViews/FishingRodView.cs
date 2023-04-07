@@ -34,9 +34,9 @@ public class FishingRodView : MonoBehaviour
         transform.DOShakePosition(1f, new Vector3(0.15f, 0f, 0f), 10, 0f, false, false);
     }
 
-    public void Animate_RodSpin(double beatDuration)
+    public void Animate_RodSpin(int rotationAngle, double beatDuration)
     {
-        handle.DORotate(new Vector3(0, 0, 360), (float)beatDuration, RotateMode.WorldAxisAdd);
+        handle.DORotate(new Vector3(0, 0, rotationAngle), (float)beatDuration, RotateMode.WorldAxisAdd);
     }
 
     public void Animate_ShiftBeatColor(double beatDuration)

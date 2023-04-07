@@ -12,19 +12,20 @@ public class FishSpawner : MonoBehaviour
     public List<Fish> goodFish;
     public List<Fish> badFish;
 
-    public Fish GetFish(float _doom)
+    public Fish GetFish(int _doom)
     {
         
         InitializeFish();
         
-        // we have to standardize how doom variable will work - i really think we have to remove the rhythm on the way down - jd
-        if (Random.Range(0f,1f) < _doom)
+        // right now, doom is incrementing by 1 each time you input, and is 0 if you miss everything
+        
+        if (Random.Range(0f,1f) <= (float)_doom / 10)
         {
-            return goodFish[Random.Range(0, goodFish.Count)];
+            return badFish[Random.Range(0,badFish.Count)];
         }
         else
         {
-            return badFish[Random.Range(0,badFish.Count)];
+            return goodFish[Random.Range(0, goodFish.Count)];
         }
     }
 
