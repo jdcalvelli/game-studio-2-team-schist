@@ -20,14 +20,10 @@ public class FishingManager : MonoBehaviour
     private double beatTime;
     // this will ultimately be relevant for tweening things
     private double nextBeatTime;
+    // length of a beat
+    private double beatDuration;
     // setting the tolerance window for acceptable hits
     private double toleranceWindow = 0.5d;
-
-    // flag to only spawn notes after each other
-    private bool noteSpawnFlag = true;
-    private NoteView currentNoteView = null;
-    private GameObject currentNote = null;
-    private GameObject nextNote = null;
 
     //flag to run coroutine only once
     private bool castingRodFlag = false;
@@ -49,18 +45,12 @@ public class FishingManager : MonoBehaviour
     // grab reference to fishspawner
     [SerializeField] private FishSpawner fishSpawner;
 
-    [SerializeField] private GameObject _notePrefab;
-
     // Views Setup - FishingManager
     [SerializeField] private GameObject _fishingViewsContainer;
 
     [SerializeField] private FishingRodView _fishingRodView;
     [SerializeField] private FishView _fishView;
-    [SerializeField] private NoteView _noteView;
-    [SerializeField] private BeatBarView _beatBarView;
 
-    [SerializeField] GameObject beatBar;
-    
     // creating fishing update that will be called by game manager
     public void FishingSubGameUpdate()
     {
@@ -132,9 +122,6 @@ public class FishingManager : MonoBehaviour
                 {
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
-                    _beatBarView.Animate_BeatBarAppearOrDisappear();
-                    //_noteView.Animate_NoteAppear();
-                    StartCoroutine(SpawnNoteOnBar());
                     FishingSubGameState = States.FishingSubGameStates.rhythmUp;
                     // reset hook set timer
                     timer -= timeToSetHook;
@@ -155,24 +142,18 @@ public class FishingManager : MonoBehaviour
                 // then this update is irrelevant, and things get handled in the onbeatcallack
                 AddOnBeatListener();
 
-                if (noteSpawnFlag) {
-                    StartCoroutine(SpawnNoteOnBar());
-                }
-
                 // checking input - should be refactored later
                 if (inputManager.PrimaryKeyDown())
                 {
                     if (CheckInputOnBeat())
                     {
                         Debug.Log("hit on beat");
-                        currentNoteView.Animate_NoteHit();
                         // increment a hit counter 
                         hitCounter++;
                     }
                     else
                     {
                         Debug.Log("missed the beat");
-                        currentNoteView.Animate_NoteMiss();
                         // increment a miss counter
                         missCounter++;
                     }
@@ -182,7 +163,6 @@ public class FishingManager : MonoBehaviour
                 // using arbitrary hits and misses for now
                 if (hitCounter >= 4)
                 {
-                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish caught state
                     FishingSubGameState = States.FishingSubGameStates.fishCaught;
                     // remove the beat listener
@@ -193,7 +173,6 @@ public class FishingManager : MonoBehaviour
                 }
                 else if (missCounter >= 4)
                 {
-                    _beatBarView.Animate_BeatBarAppearOrDisappear();
                     // switch to fish lost state
                     FishingSubGameState = States.FishingSubGameStates.fishLost;
                     // remove the listener
@@ -206,8 +185,6 @@ public class FishingManager : MonoBehaviour
             
             case States.FishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
-                // hide note display and show fish on success
-                currentNoteView.Animate_NoteDisappear();
 
                 // reference fish spawner to return a fish and debug it
                 // we can ultimately pass this into fish caught animate to determine which fish image we use
@@ -225,10 +202,6 @@ public class FishingManager : MonoBehaviour
 
             case States.FishingSubGameStates.fishLost:
                 // restart game
-                // hide note display on failure
-                if (currentNoteView != null) {
-                    currentNoteView.Animate_NoteDisappear();
-                }
                 FishingSubGameState = States.FishingSubGameStates.startSubGame;
                 break;
             
@@ -250,16 +223,6 @@ public class FishingManager : MonoBehaviour
         gameManager.SetGameState(States.GameStates.onBoat);
     }
 
-    private IEnumerator SpawnNoteOnBar() {
-        noteSpawnFlag = false;
-        yield return new WaitForSeconds(1f);
-        currentNote = Instantiate(_notePrefab, beatBar.transform);
-        currentNote.transform.position = new Vector3(beatBar.transform.position.x + 400f, beatBar.transform.position.y + 450f, 0f);
-        currentNoteView = currentNote.GetComponent<NoteView>();
-        StartCoroutine(currentNoteView.Animate_MoveNoteAlongBar((float)(nextBeatTime - beatTime)));
-        noteSpawnFlag = true;
-    }
-    
     // when fishing, there should be a chance for a bite, then player needs to hook, then they need to reel
 
     #region RodCastRelated
@@ -372,13 +335,19 @@ public class FishingManager : MonoBehaviour
         // assumption is for now that we only care abt quarter notes - will have to refactor later prob
         beatTime = beatArgs.BeatTime;
         nextBeatTime = beatArgs.NextBeatTime;
-
+        beatDuration = nextBeatTime - beatTime;
+        
         // logs just for testing
         // Debug.Log("-------");
         Debug.Log(beatArgs.BeatVal);
         // Debug.Log(beatArgs.BeatTime);
         // Debug.Log(beatArgs.NextBeatTime);
         // Debug.Log("-------");
+        
+        // call the rod rotate function
+        _fishingRodView.Animate_RodSpin(beatDuration);
+        // call the color shift
+        _fishingRodView.Animate_ShiftBeatColor(beatDuration);
     }
     
     // because we cant check for input on alternate threads, what we're going to do is
@@ -387,8 +356,8 @@ public class FishingManager : MonoBehaviour
     {
         // want to check if the dsptime at this point is within a tolerance window of the
         // correct beat time as set by the clock script
-        if (AudioSettings.dspTime > beatTime - toleranceWindow 
-            && AudioSettings.dspTime < beatTime + toleranceWindow)
+        if (AudioSettings.dspTime > nextBeatTime - toleranceWindow 
+            && AudioSettings.dspTime < nextBeatTime + toleranceWindow)
         {
             return true;
         }
