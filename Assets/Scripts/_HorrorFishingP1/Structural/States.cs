@@ -32,7 +32,6 @@ public class States
         rhythmDown,
         waitingForBite,
         biteRegistered,
-        rhythmUp,
         fishCaught,
         fishLost,
         showFishCaught,

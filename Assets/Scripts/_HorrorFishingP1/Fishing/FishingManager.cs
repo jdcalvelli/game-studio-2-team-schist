@@ -31,11 +31,6 @@ public class FishingManager : MonoBehaviour
     // will be incremented by 1 for each miss
     private int doomVar = 0;
 
-    // for hit counting
-    private int hitCounter;
-    // for miss counting
-    private int missCounter;
-
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
     [SerializeField] private CanvasManager canvasManager;
@@ -126,7 +121,7 @@ public class FishingManager : MonoBehaviour
                 {
                     // fish has been set
                     Debug.Log("hook has been set, now reel");
-                    FishingSubGameState = States.FishingSubGameStates.rhythmUp;
+                    FishingSubGameState = States.FishingSubGameStates.fishCaught;
                     // reset hook set timer
                     timer -= timeToSetHook;
                 }
@@ -139,47 +134,7 @@ public class FishingManager : MonoBehaviour
                     timer -= timeToSetHook;
                 }
                 break;
-            
-            case States.FishingSubGameStates.rhythmUp:
-                // this is ultimately where the rhythmic element will come in
 
-                // checking input - should be refactored later
-                if (inputManager.PrimaryKeyDown())
-                {
-                    if (CheckInputOnBeat())
-                    {
-                        Debug.Log("hit on beat");
-                        // increment a hit counter 
-                        hitCounter++;
-                    }
-                    else
-                    {
-                        Debug.Log("missed the beat");
-                        // increment a miss counter
-                        missCounter++;
-                    }
-                }
-                
-                // checking to see if sufficient hits/misses happened to trigger state change
-                // using arbitrary hits and misses for now
-                if (hitCounter >= 4)
-                {
-                    // switch to fish caught state
-                    FishingSubGameState = States.FishingSubGameStates.fishCaught;
-                    // reset hit counter
-                    hitCounter = 0;
-                    missCounter = 0;
-                }
-                else if (missCounter >= 4)
-                {
-                    // switch to fish lost state
-                    FishingSubGameState = States.FishingSubGameStates.fishLost;
-                    // reset miss counter
-                    hitCounter = 0;
-                    missCounter = 0;
-                }
-                break;
-            
             case States.FishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
 
@@ -333,12 +288,6 @@ public class FishingManager : MonoBehaviour
                 // increment doom variable by default
                 doomVar++;
                 Debug.Log(doomVar);
-                break;
-            case States.FishingSubGameStates.rhythmUp:
-                // call the rod rotate function going forward
-                _fishingRodView.Animate_RodSpin(360, beatDuration);
-                // call the color shift
-                _fishingRodView.Animate_ShiftBeatColor(beatDuration);
                 break;
         }
     }
