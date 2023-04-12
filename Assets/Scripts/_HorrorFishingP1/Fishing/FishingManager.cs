@@ -94,11 +94,12 @@ public class FishingManager : MonoBehaviour
                 else if (timer > timeToSinkHook)
                 {
                     // just printing doom variable for now
-                    Debug.Log(doomVar);
+                    Debug.Log("Doom: " + doomVar);
                     // move to the next state to wait for bite
                     FishingSubGameState = States.FishingSubGameStates.waitingForBite;
                     // resetting timer
-                    timer -= timeToSinkHook;
+                    // timer -= timeToSinkHook;
+                    timer = 0f;
                 }
                 break;
             
