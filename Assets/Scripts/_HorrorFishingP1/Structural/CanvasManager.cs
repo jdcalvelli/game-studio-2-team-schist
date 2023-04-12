@@ -9,7 +9,7 @@ public class CanvasManager : MonoBehaviour
     public enum textPositions {
         bottomLeft,
         bottomCenter,
-        topLeft
+        topLeft,
     }
 
     [SerializeField] private Image borderImage;
