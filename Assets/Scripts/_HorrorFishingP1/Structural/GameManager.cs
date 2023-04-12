@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public int gameRound = 0;
+    
     // create a var with gameState enum type to track state
     private States.GameStates _gameStates;
     
@@ -46,6 +48,9 @@ public class GameManager : MonoBehaviour
             case States.GameStates.onBoat:
                 // this is a centralized state that will move the states correctly, ideally
                 Debug.Log("in onBoat");
+                
+                // debugging which round we're on
+                Debug.Log("game round: " + gameRound);
 
                 if (!hasBaited && !hasFished && !hasCleaned)
                 {
@@ -101,6 +106,9 @@ public class GameManager : MonoBehaviour
                 Debug.Log("in isCleaning");
                 canvasManager.SetBaitingCleaningUI();
                 cleaningManager.CleaningSubGameUpdate();
+
+                // increment the number of rounds
+                gameRound++;
                 break;
             
             case States.GameStates.gameEnd:

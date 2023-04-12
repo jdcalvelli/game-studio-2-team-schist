@@ -43,12 +43,6 @@ public class States
     {
         startSubGame,
         unhookFish,
-        pickUpKnife,
-        cutHead,
-        sliceBelly,
-        pullInnards,
-        shaveScales,
-        storeInCooler,
         endSubGame,
     }
 

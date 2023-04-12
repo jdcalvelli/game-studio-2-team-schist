@@ -193,7 +193,7 @@ public class FishingManager : MonoBehaviour
         // Play fishing rod view animation
         castingRodFlag = true;
         _fishingRodView.Animate_CastRod();
-        yield return new WaitForSeconds(_fishingRodView.rodCastTimer + _fishingRodView.lineFlyTimer);
+        yield return new WaitForSeconds(2 * _fishingRodView.rodCastTimer);
     
         // we want to move to rhythm down now
         FishingSubGameState = States.FishingSubGameStates.rhythmDown;
