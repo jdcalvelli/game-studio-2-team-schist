@@ -30,6 +30,7 @@ public class FishingManager : MonoBehaviour
     // doom variable for which fish you get
     // will be incremented by 1 for each miss
     private int doomVar = 0;
+    private Fish fish;
 
     [SerializeField] private GameManager gameManager;
     [SerializeField] private InputManager inputManager;
@@ -137,12 +138,12 @@ public class FishingManager : MonoBehaviour
 
             case States.FishingSubGameStates.fishCaught:
                 Debug.Log("congrats you caught the fish");
-
+                fish = fishSpawner.GetFish(doomVar);
                 // reference fish spawner to return a fish and debug it
                 // we can ultimately pass this into fish caught animate to determine which fish image we use
-                Debug.Log(fishSpawner.GetFish(doomVar));
+                Debug.Log("you caught a " + fish.name);
                 
-                // restart game
+                // animate fish that was caught
                 FishingSubGameState = States.FishingSubGameStates.showFishCaught;
                 break;
 
@@ -151,7 +152,7 @@ public class FishingManager : MonoBehaviour
                 doomVar = 0;
                 
                 if (fishCaughtFlag == false) {
-                    StartCoroutine(ShowFishCaught(fishSpawner.GetFish(doomVar)));
+                    StartCoroutine(ShowFishCaught(fish));
                 }
                 break;
 
