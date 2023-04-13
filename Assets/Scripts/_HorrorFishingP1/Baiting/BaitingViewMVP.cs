@@ -8,11 +8,17 @@ public class BaitingViewMVP : MonoBehaviour
     [SerializeField] private Sprite preBaitSprite;
     [SerializeField] private Sprite postBaitSprite;
 
+    [SerializeField] private AudioSource baitingAudioSource;
+
     public void Animate_BaitHook() {
         currentBaitSprite.sprite = postBaitSprite;
     }
 
     public void ResetBaitView() {
         currentBaitSprite.sprite = preBaitSprite;
+    }
+
+    public void Play_BaitSFX() {
+        baitingAudioSource.PlayOneShot(baitingAudioSource.clip);
     }
 }

@@ -27,6 +27,8 @@ public class CleaningManager : MonoBehaviour
                 if (inputManager.PrimaryKeyDown()) {
                         //Play animation of closeup of fish on hook *here*
                         _cleaningSubGameState = States.CleaningSubGameStates.unhookFish;
+                        //Play unhook SFX
+                        _cleaningView.Play_UnhookSFX();
                 }
                 break;
 

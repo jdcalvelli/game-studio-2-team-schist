@@ -10,6 +10,10 @@ public class FishingRodView : MonoBehaviour
     // get sub elements
     [SerializeField] private Transform handle;
     [SerializeField] private SpriteRenderer beatCircle;
+
+    [SerializeField] private AudioSource rodAudioSource;
+    [SerializeField] private AudioClip[] reelSFX;
+    [SerializeField] private AudioClip[] castSFX;
     
     public float rodCastTimer = 1f;
     public float lineFlyTimer = 0.1f;
@@ -23,6 +27,7 @@ public class FishingRodView : MonoBehaviour
         seq.Append(transform.DOMove(new Vector3(transform.position.x - 1f, transform.position.y + 1.5f, transform.position.z), rodCastTimer));
         seq.Join(transform.DOScale(new Vector3(1.5f, 1.5f, 1), rodCastTimer));
         seq.Join(transform.DORotate(new Vector3(0,0, 30), rodCastTimer).OnComplete(() => {
+            StartCoroutine(Play_LineCastSFX());
             transform.DOMove(originalRodPosition, lineFlyTimer);
             transform.DOScale(originalScale, lineFlyTimer);
             transform.DORotate(Vector3.zero, lineFlyTimer);
@@ -42,5 +47,16 @@ public class FishingRodView : MonoBehaviour
     public void Animate_ShiftBeatColor(double beatDuration)
     {
         beatCircle.DOColor(Color.green, (float)beatDuration).SetEase(Ease.InCubic).OnComplete(() => beatCircle.color = Color.white);
+    }
+
+    public void Play_RandomReelSFX() {
+        rodAudioSource.PlayOneShot(reelSFX[UnityEngine.Random.Range(0, reelSFX.Length)]);
+    }
+
+
+    public IEnumerator Play_LineCastSFX() {
+        rodAudioSource.PlayOneShot(castSFX[0]);
+        yield return new WaitForSeconds(castSFX[0].length);
+        rodAudioSource.PlayOneShot(castSFX[1]);
     }
 }
