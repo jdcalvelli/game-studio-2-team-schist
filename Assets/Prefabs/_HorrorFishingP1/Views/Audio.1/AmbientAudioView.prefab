@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5712144100110775617}
   - component: {fileID: 5712144100110775616}
+  - component: {fileID: 4636545224462985464}
   m_Layer: 0
-  m_Name: AudioSource
+  m_Name: AmbientAudioView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -128,3 +129,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &4636545224462985464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5712144100110775618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65a68ef70ad8cdf46b20fbe83d2523af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ambientAudioSource: {fileID: 5712144100110775616}
+  ambientBGMs:
+  - {fileID: 8300000, guid: 74f45b1d72cb4414f955ed138b19481f, type: 3}
+  - {fileID: 8300000, guid: feec3b5f620354a6fa48c7a1cc7f97b2, type: 3}
+  - {fileID: 8300000, guid: 96a1aa23b87e04300b19f1d33db1a0f2, type: 3}

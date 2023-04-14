@@ -24,6 +24,9 @@ public class BaitingManagerMVP : MonoBehaviour
                 canvasManager.SetText(CanvasManager.textPositions.bottomCenter, "PRESS SPACE TO BAIT");
                 if (inputManager.PrimaryKeyDown()) {
                     BaitingSubGameState = States.BaitingSubGameStates.baitHook;
+
+                    //Play bait SFX
+                    _baitingView.Play_BaitSFX();
                 }
                 break;
             case States.BaitingSubGameStates.baitHook:

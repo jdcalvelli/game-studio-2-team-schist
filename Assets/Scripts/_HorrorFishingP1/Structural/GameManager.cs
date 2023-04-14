@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     // get references to ancilary managers
     [SerializeField] private InputManager inputManager;
     [SerializeField] private CanvasManager canvasManager;
+    [SerializeField] private AmbientAudioManager ambientAudioManager;
 
     // booleans for tracking order
     public bool hasBaited = false;
@@ -31,6 +32,9 @@ public class GameManager : MonoBehaviour
     // for now, switch statement that will check which state we are in and do things based on state
     void Update()
     {
+        // Play ambient audio, play a new random one when it ends
+        ambientAudioManager.StartRandomBGM();
+
         // debug log current state just for testing purposes
         // Debug.Log(_gameStates);
         

@@ -91,6 +91,8 @@ public class FishingManager : MonoBehaviour
                     // see in beat callback below
                     if (CheckInputOnBeat())
                     {
+                        // Play random reel SFX
+                        _fishingRodView.Play_RandomReelSFX();
                         // increment doom variable
                         doomVar--;
                     }
@@ -148,6 +150,8 @@ public class FishingManager : MonoBehaviour
                 {
                     if (CheckInputOnBeat())
                     {
+                        // Play random reel SFX
+                        _fishingRodView.Play_RandomReelSFX();
                         Debug.Log("hit on beat");
                         // increment a hit counter 
                         hitCounter++;
